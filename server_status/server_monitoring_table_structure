@@ -3,7 +3,14 @@ Indicator status in table for disk space
 CPU utilization indicator for java process
 file modification date validation
 
+main_gui_data
+--------------
+server_ip (VARCHAR(20)),
+amber_color (VARCHAR(10))
 
+CREATE TABLE main_gui_data (server_ip VARCHAR(20) NOT NULL, amber_color VARCHAR(10));
+
+----------------------------------------------
 
 #disk_space:
 ------------
