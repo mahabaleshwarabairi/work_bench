@@ -1,0 +1,79 @@
+
+Indicator status in table for disk space
+CPU utilization indicator for java process
+file modification date validation
+
+
+
+disk_space:
+------------
+server_ip (VARCHAR(20)),
+mounted_on (VARCHAR(200)),
+size (VARCHAR(10)), 
+used_size (VARCHAR(10)),
+available_size (VARCHAR(10)),
+use_percent (VARCHAR(10)), 
+
+monitor_time TIMESTAMP NOT NULL,
+data_inserted_time TIMESTAMP NOT NULL,
+indicator_status VARCHAR(20)
+
+CREATE TABLE disk_space_stats (mounted_path VARCHAR(200), total_size VARCHAR(10), used_size VARCHAR(10), available_size VARCHAR(10), use_percent(10), monitor_time TIMESTAMP NOT NULL), indicator_status VARCHAR(20);
+
+----------------------------------------------
+
+Memory usage:
+--------------
+memory_type VARCHAR(40),
+total_memory VARCHAR(5),
+used_memory VARCHAR(5),
+free_memory VARCHAR(5),
+shared_memory VARCHAR(5),
+buffers VARCHAR(5),
+cached VARCHAR(5)
+
+CREATE TABLE ram_memory_stats (memory_type VARCHAR(40), total_memory VARCHAR(5), used_memory VARCHAR(5), free_memory VARCHAR(5), shared_memory VARCHAR(5), buffers VARCHAR(5), cached VARCHAR(5), monitor_time TIMESTAMP NOT NULL);
+
+----------------------------------------------
+
+load average:
+-------------
+no_of_users VARCHAR(10),
+uptime VARCHAR(150),
+one_minute_average VARCHAR(100),
+five_minute_average VARCHAR(100),
+fifteen_minute_average VARCHAR(100),
+monitor_time TIMESTAMP NOT NULL
+
+CREATE TABLE load_average_stats (no_of_users VARCHAR(10), uptime VARCHAR(150), one_minute_average VARCHAR(100), five_minute_average VARCHAR(100), fifteen_minute_average VARCHAR(100), monitor_time TIMESTAMP NOT NULL)
+
+----------------------------------------------
+
+logged users:
+---------------
+username VARCHAR(100),
+terminal VARCHAR(100),
+logged_in_from VARCHAR(100),
+login_time VARCHAR(50),
+idle_time VARCHAR(50),
+monitor_time TIMESTATMP NOT NULL
+
+CREATE TABLE logged_in_users_stats (username VARCHAR(100), terminal VARCHAR(100), logged_in_from VARCHAR(100), login_time VARCHAR(50), idle_time VARCHAR(50), monitor_time TIMESTATMP NOT NULL)
+
+----------------------------------------------
+
+java and mysql process:
+-----------------------
+
+process_type VARCHAR(100),
+username VARCHAR(100),
+process_id VARCHAR(20),
+parent_process_id VARCHAR(20),
+processor_utilization VARCHAR(40),
+start_time VARCHAR(30),
+process_address TEXT,
+monitor_time TIMESTAMP NOT NULL
+
+CREATE TABLE java_process_stats (process_type VARCHAR(100), username VARCHAR(100), process_id VARCHAR(20), parent_process_id VARCHAR(20), processor_utilization VARCHAR(40), start_time VARCHAR(30), process_address TEXT, monitor_time TIMESTAMP NOT NULL)
+
+----------------------------------------------
