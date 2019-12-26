@@ -1,6 +1,7 @@
 required_java=yes
 required_mysql=yes
 required_O3=no
+
 disk_space_stats#header_Drive_name---Total_size---Size_used---Available_size---Use_percentage
 disk_space_stats#/---240G---178G---50G---79%
 disk_space_stats#/boot---289M---17M---258M---7%
