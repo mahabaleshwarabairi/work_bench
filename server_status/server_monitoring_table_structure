@@ -5,7 +5,7 @@ file modification date validation
 
 
 
-disk_space:
+#disk_space:
 ------------
 server_ip (VARCHAR(20)),
 mounted_on (VARCHAR(200)),
@@ -22,7 +22,7 @@ CREATE TABLE disk_space_stats (mounted_path VARCHAR(200), total_size VARCHAR(10)
 
 ----------------------------------------------
 
-Memory usage:
+#Memory usage:
 --------------
 memory_type VARCHAR(40),
 total_memory VARCHAR(5),
@@ -36,7 +36,7 @@ CREATE TABLE ram_memory_stats (memory_type VARCHAR(40), total_memory VARCHAR(5),
 
 ----------------------------------------------
 
-load average:
+#load average:
 -------------
 no_of_users VARCHAR(10),
 uptime VARCHAR(150),
@@ -49,7 +49,7 @@ CREATE TABLE load_average_stats (no_of_users VARCHAR(10), uptime VARCHAR(150), o
 
 ----------------------------------------------
 
-logged users:
+#logged users:
 ---------------
 username VARCHAR(100),
 terminal VARCHAR(100),
@@ -62,8 +62,8 @@ CREATE TABLE logged_in_users_stats (username VARCHAR(100), terminal VARCHAR(100)
 
 ----------------------------------------------
 
-java and mysql process:
------------------------
+#java and mysql process and O3 process:
+---------------------------------------
 
 process_type VARCHAR(100),
 username VARCHAR(100),
