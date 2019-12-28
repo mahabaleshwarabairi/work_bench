@@ -107,8 +107,8 @@ def server_indicator_color(cat_a_list, cat_b_list):
         print("-------------------------")
         cat_a_list = list(set(cat_a_list))
         cat_b_list = list(set(cat_b_list))
-        print("cat a indicator list is : %s" %cat_a_list)
-        print("cat b indicator list is : %s" %cat_b_list)
+        #print("cat a indicator list is : %s" %cat_a_list)
+        #print("cat b indicator list is : %s" %cat_b_list)
 
         if "cat_a_True" in cat_a_list:
                 cat_a_list.remove("cat_a_False")
@@ -116,15 +116,42 @@ def server_indicator_color(cat_a_list, cat_b_list):
                 cat_b_list.remove("cat_b_False")
 
         if "cat_a_True" in cat_a_list:
-                server_amber_color = "red"
-        elif ("cat_b_True" in cat_b_list):
-                server_amber_color = "yellow"
+                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_True', 'red'), cat_a_list))
         else:
-                server_amber_color = "green"
+                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_False', 'green'), cat_a_list))
+
+        if "cat_b_True" in cat_b_list:
+                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_True', 'yellow'), cat_b_list))
+        else:
+                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_False', 'green'), cat_b_list))
+
+        cat_a_list.sort(key=str)
+        cat_b_list.sort(key=str)
         print("cat a list is : %s" %cat_a_list)
         print("cat b list is : %s" %cat_b_list)
-        print("Server amber color is : %s" %server_amber_color)
+        list_str_a = str(cat_a_list).replace('[', '')
+        list_str_a = str(list_str_a).replace(']', '')
+
+        list_str_b = str(cat_b_list).replace('[', '')
+        list_str_b = str(list_str_b).replace(']', '')
+
+        insert_main_gui_data(list_str_a)
         print("-------------------------")
+
+def insert_main_gui_data(gui_cat_list):
+        db_conn_main = pymysql.connect('10.12.23.36', 'root', 'onmobile', 'rbt')
+        cursor_main = db_conn_main.cursor()
+        main_data_insert_query = "INSERT INTO main_gui_data (server_ip, amber_color) VALUES (%s)" %(gui_cat_list)
+        print("Main gui insert query is : %s" %main_data_insert_query)
+        try:
+                cursor_main.execute(main_data_insert_query)
+                db_conn_main.commit()
+                print("Main table data inserted successfully")
+        except Exception as e:
+                print("Exception is : ", e)
+                db_conn_main.rollback()
+        finally:
+                db_conn_main.close()
 
 def process_data(category_name, main_data_file, ip_addr):
         ind_cat_a_list.append(ip_addr)
