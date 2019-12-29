@@ -1,0 +1,14 @@
+# File name : app.service
+# File path : /etc/systemd/system/
+
+[Unit]
+Description=Gunicorn instance to serve app
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/Flask_APP
+Environment="PATH=/opt/Flask_APP/:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+ExecStart=/usr/local/bin/gunicorn --workers 3 --bind unix:/opt/Flask_APP/app.sock -t 600 wsgi --error-logfile /opt/Flask_APP/error.log
+
+[Install]
+WantedBy=multi-user.target
