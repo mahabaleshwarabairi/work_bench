@@ -1,0 +1,25 @@
+File path : /etc/nginx/sites-available (Need to create this directory)
+File name : app
+#Below configuration is for same service(/opt/Flask_APP/app.sock) running on two different port numbers (8090, 8092)
+
+server {
+    listen 8090;
+    server_name 0.0.0.0;
+    keepalive_requests 10000000;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/opt/Flask_APP/app.sock;
+    }
+}
+
+server {
+    listen 8092;
+    server_name 0.0.0.0;
+    keepalive_requests 10000000;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/opt/Flask_APP/app.sock;
+    }
+}
