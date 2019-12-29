@@ -1,0 +1,5 @@
+File path: /etc/nginx/sites-enabled (Need to create this directory if not available)
+
+Create a soft link to sites-enabled path from sites-available/app file
+
+ln -s /etc/nginx/sites-available/app  /etc/nginx/sites-enabled
