@@ -6,8 +6,8 @@ import time
 import datetime
 
 #main_data_file = "/var/www/FlaskApp/FlaskApp/status.log"
-data_headings_file = "/var/www/FlaskApp/FlaskApp/data_categories.txt"
-tmp_file = "/var/www/FlaskApp/FlaskApp/tmp_file.txt"
+data_headings_file = "/opt/Flask_APP/data_process/data_categories.txt"
+tmp_file = "/opt/Flask_APP/data_process/tmp_file.txt"
 table_names_dict = {}
 date_default_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 ind_cat_a_list = []
@@ -124,24 +124,31 @@ def server_indicator_color(cat_a_list, cat_b_list):
                 cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_True', 'yellow'), cat_b_list))
         else:
                 cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_False', 'green'), cat_b_list))
-
         cat_a_list.sort(key=str)
         cat_b_list.sort(key=str)
-        print("cat a list is : %s" %cat_a_list)
-        print("cat b list is : %s" %cat_b_list)
+        print("cat a list is : %s"%(cat_a_list))
+        print("cat b list is : %s"%(cat_b_list))
+
         list_str_a = str(cat_a_list).replace('[', '')
         list_str_a = str(list_str_a).replace(']', '')
-
         list_str_b = str(cat_b_list).replace('[', '')
         list_str_b = str(list_str_b).replace(']', '')
 
-        insert_main_gui_data(list_str_a)
+        cat_a_identifier = list_str_a.find('red')
+        cat_b_identifier = list_str_b.find('yellow')
+
+        if cat_a_identifier >= 0:
+                insert_main_gui_data(list_str_a)
+        elif cat_b_identifier >= 0:
+                insert_main_gui_data(list_str_b)
+        else:
+                insert_main_gui_data(list_str_b)          # Passing one of the list because both having green identifier
         print("-------------------------")
 
 def insert_main_gui_data(gui_cat_list):
-        db_conn_main = pymysql.connect('10.12.23.36', 'root', 'onmobile', 'rbt')
+        db_conn_main = pymysql.connect('192.168.1.102', 'root', 'onmobile', 'test_data')
         cursor_main = db_conn_main.cursor()
-        main_data_insert_query = "INSERT INTO main_gui_data (server_ip, amber_color) VALUES (%s)" %(gui_cat_list)
+        main_data_insert_query = "INSERT INTO main_gui_data (server_ip, cat_a_color, cat_b_color) VALUES (%s)" %(gui_cat_list)
         print("Main gui insert query is : %s" %main_data_insert_query)
         try:
                 cursor_main.execute(main_data_insert_query)
@@ -253,13 +260,18 @@ def process_data(category_name, main_data_file, ip_addr):
                                         process_utilization = int(splt_data1[3])
 
                                 if process_addrs == "NO_JAVA_PROCESS_RUNNING":
-                                        java_indicator_color = "red"
-                                        java_cat = "cat_a_True"
+                                        if get_process_list(main_data_file, "java", main_data_file_lines_count) == "yes":
+                                                java_indicator_color = "red"
+                                                java_cat = "cat_a_True"
+                                        else:
+                                                java_indicator_color = "green"
+                                                java_cat = "cat_a_False"
                                 elif process_utilization >= 50:
                                         java_indicator_color = "red"
                                 else:
                                         java_indicator_color = "green"
                                         java_cat = "cat_a_False"
+
                                 print("java cat is : %s" %java_cat)
                                 ind_cat_a_list.append(java_cat)
 
@@ -272,8 +284,12 @@ def process_data(category_name, main_data_file, ip_addr):
                                         process_utilization = int(splt_data1[3])
 
                                 if process_addrs == "NO_MYSQL_PROCESS_RUNNING":
-                                        mysql_indicator_color = "red"
-                                        mysql_cat = "cat_a_True"
+                                        if get_process_list(main_data_file, "mysql", main_data_file_lines_count) == "yes":
+                                                mysql_indicator_color = "red"
+                                                mysql_cat = "cat_a_True"
+                                        else:
+                                                mysql_indicator_color = "green"
+                                                mysql_cat = "cat_a_False"
                                 elif process_utilization >=50:
                                         mysql_indicator_color = "red"
                                 else:
@@ -291,8 +307,12 @@ def process_data(category_name, main_data_file, ip_addr):
                                         process_utilization = int(splt_data1[3])
 
                                 if process_addrs == "NO_O3_COMPONENTS_RUNNING":
-                                        o3_indicator_color = "red"
-                                        O3_cat = "cat_a_True"
+                                        if get_process_list(main_data_file, "O3", main_data_file_lines_count) == "yes":
+                                                o3_indicator_color = "red"
+                                                O3_cat = "cat_a_True"
+                                        else:
+                                                o3_indicator_color = "green"
+                                                O3_cat = "cat_a_False"
                                 elif process_utilization >= 50:
                                         o3_indicator_color = "red"
                                 else:
@@ -334,7 +354,7 @@ def process_data(category_name, main_data_file, ip_addr):
         print("")
 
 def insert_data(tbl_category_name, tbl_headings_data, tbl_values_data, tbl_monitor_time, tbl_ip_addr, tbl_ind_color):
-        db_conn = pymysql.connect('10.12.23.36', 'root', 'onmobile', 'rbt')
+        db_conn = pymysql.connect('192.168.1.102', 'root', 'onmobile', 'test_data')
         cursor = db_conn.cursor()
         #insert_query = "INSERT INTO test_table (id, username, email) VALUES ('%d', '%s', '%s')" %(id, username, email)
         insert_query = "INSERT INTO %s (%s) VALUES (\'%s\', %s,\'%s\',\'%s\', \'%s\')" %(tbl_category_name, tbl_headings_data, tbl_ip_addr, tbl_values_data, tbl_monitor_time, date_default_time, tbl_ind_color)
@@ -360,7 +380,7 @@ def list_paths(path_name):
                                 files_list.append(os.path.join(r,files))
         print("File names are : %s" % files_list)
 
-list_paths("/var/www/FlaskApp/FlaskApp/server_status_log_files")
+list_paths("/opt/Flask_APP/data_process/server_status_log_files")
 
 def call_process_data(server_log_file):
         threshold_limits(server_log_file)
