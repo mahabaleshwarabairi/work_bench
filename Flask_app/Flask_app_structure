@@ -1,0 +1,14 @@
+Flask Application root path : /opt/Flask_APP
+Flask application file : /opt/Flask_APP/app.py
+Flask application wsgi file : /opt/Flask_APP/wsgi.py
+Flask templates : /opt/Flask_APP/templates/
+Flask application socket file : /opt/Flask_APP/app.sock
+
+|__ /opt/Flask_APP
+|     |__app.py
+|     |__wsgi.py
+|     |__templates/
+|     |__static/
+|     |__venv/
+|     |__app.sock
+|     |
