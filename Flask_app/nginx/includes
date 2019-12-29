@@ -1,0 +1,5 @@
+File name : /etc/nginx/nginx.conf
+
+Add below line under includes in http section in above config file.
+
+include /etc/nginx/sites-available/app;
