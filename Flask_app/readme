@@ -1,0 +1,19 @@
+VM Box Flask services start
+---------------------------
+systemclt start app
+systemctl start nginx
+firewalld-cmd --state
+systemctl stop firewalld
+systemctl start mariadb
+
+
+Flask Application structure
+---------------------------
+1.  Create your flask application in any directory (/opt/Flask_App)
+            Flask_app_root_path/app.py
+            Flask_app_root_path/wsgi.py
+1.  First need to create Flask application service
+         app service creation in /etc/systemd/system/
+2.  Configure nginx 
+3.  Start app service (systemctl start app)
+4.  Start nginx service (systemctl start nginx)
