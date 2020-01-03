@@ -1,0 +1,64 @@
+<html>
+        <head>
+                <title>Server Status - Central GUI</title>
+                <style>
+                        table {
+                                border-collapse: collapse;
+                              }
+                        table, td, th, tbody, thead {
+                                border: 1px solid black;
+                                }
+                        th {
+                                height: 50px;
+                                background-color: #E41B17;
+                                color:white;
+                          }
+                        tr {
+                                height: 30px;
+                           }
+                        .footer {
+                                position: fixed;
+                                left: 0;
+                                bottom: 1;
+                                width: 100%;
+                                height: 28px;
+                                background-color: red;
+                                color: white;
+                                text-align: center;
+                                font-family: Verdana, Geneva, sans-serif;
+                                font-size: 10px;
+                                }
+                </style>
+        </head>
+
+        <body>
+                <h3 align='center'><a href="{{ url_for('main_gui') }}">Server Status - Central GUI</a></h3>
+                {% for message in get_flashed_messages() %}
+                        {{ message }}
+                {% endfor %}
+
+        <table border='1' align='center'>
+                <thead>
+                        <tr align='center'>
+                                <th>Id</th>
+                                <th>Server IP</th>
+                                <th>Server Type</th>
+                                <th>Monitor Time</th>
+                                <th>Indicator</th>
+                        </tr>
+                </thead>
+                <tbody>
+                        {% for server_data in server_details %}
+                        {% set ip_addrs = '10.12.3.10' %}
+                        <tr align='center'>
+                                <td>{{ server_data.id }}</td>
+                                <td><a href="{{ url_for('display_server_data', server_ip=10.12 ) }}" target="_blank">{{ server_data.server_ip }}</a></td>
+                                <td>{{ server_data.server_type }}</td>
+                                <td>{{ server_data.monitor_time }}</td>
+                                <td>{{ server_data.amber_color }}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+        </table>
+        </body>
+</html>
