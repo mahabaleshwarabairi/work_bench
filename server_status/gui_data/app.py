@@ -25,7 +25,7 @@ def __init__(self, server_ip, amber_color, server_type, monitor_time):
 def main_gui():
         return render_template("central_gui.html", server_details = ServerStatus.query.all())
 
-@app.route('/ss/server_ip')
+@app.route('/ss/<server_ip>')
 def display_server_data(server_ip):
         return server_ip
 
