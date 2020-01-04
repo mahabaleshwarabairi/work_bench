@@ -45,17 +45,30 @@
                                 <th>Server Type</th>
                                 <th>Monitor Time</th>
                                 <th>Indicator</th>
+                                <th>Color</th>
                         </tr>
                 </thead>
                 <tbody>
                         {% for server_data in server_details %}
-                        {% set ip_addrs = '10.12.3.10' %}
+                        {% set ip_addrs = server_data.server_ip %}
+
+                        {% if server_data.amber_color == "green" %}
+                                {% set indicator_img = "static/green_indicator.png" %}
+                        {% elif server_data.amber_color == "red" %}
+                                {% set indicator_img = "static/red_indicator.png" %}
+                        {% elif server_data.amber_color == "yellow" %}
+                                {% set indicator_img = "static/yellow_indicator.png" %}
+                        {% else %}
+                                {% set indicator_img = static/red_indicator.png %}
+                        {% endif %}
+
                         <tr align='center'>
                                 <td>{{ server_data.id }}</td>
-                                <td><a href="{{ url_for('display_server_data', server_ip=10.12 ) }}" target="_blank">{{ server_data.server_ip }}</a></td>
+                                <td><a href="{{ url_for('display_server_data', server_ip=ip_addrs ) }}" target="_blank">{{ server_data.server_ip }}</a></td>
                                 <td>{{ server_data.server_type }}</td>
                                 <td>{{ server_data.monitor_time }}</td>
                                 <td>{{ server_data.amber_color }}</td>
+                                <td><input type='image' title='amber_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
                 </tbody>
