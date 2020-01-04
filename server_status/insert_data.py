@@ -5,13 +5,13 @@ import os
 import time
 import datetime
 
-#main_data_file = "/var/www/FlaskApp/FlaskApp/status.log"
-data_headings_file = "/opt/Flask_APP/data_process/data_categories.txt"
-tmp_file = "/opt/Flask_APP/data_process/tmp_file.txt"
+data_headings_file = "/opt/Flask_APP/server_status/data_processing/data_categories.txt"
+tmp_file = "/opt/Flask_APP/server_status/data_processing/tmp_file.txt"
 table_names_dict = {}
 date_default_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 ind_cat_a_list = []
 ind_cat_b_list = []
+server_type_details = ""
 
 def threshold_limits(main_data_file):
         disk_threshold=80
@@ -98,12 +98,12 @@ def get_process_list(process_file_name, process_name, process_lines_count):
         with open(process_file_name, "r") as process_list:
                 for k in range(process_lines_count):
                         process_data = process_list.readline()
-                        if "required_" in process_data:
+                        if "required_" in process_data and not "required_server_type" in process_data:
                                 if process_name in process_data:
                                         process_nm = process_data.split('=')[1]
         return process_nm.strip()
 
-def server_indicator_color(cat_a_list, cat_b_list):
+def server_indicator_color(cat_a_list, cat_b_list, server_details):
         print("-------------------------")
         cat_a_list = list(set(cat_a_list))
         cat_b_list = list(set(cat_b_list))
@@ -138,17 +138,17 @@ def server_indicator_color(cat_a_list, cat_b_list):
         cat_b_identifier = list_str_b.find('yellow')
 
         if cat_a_identifier >= 0:
-                insert_main_gui_data(list_str_a)
+                insert_main_gui_data(list_str_a, server_details)
         elif cat_b_identifier >= 0:
-                insert_main_gui_data(list_str_b)
+                insert_main_gui_data(list_str_b, server_details)
         else:
-                insert_main_gui_data(list_str_b)          # Passing one of the list because both having green identifier
+                insert_main_gui_data(list_str_b, server_details)          # Passing one of the list because both having green identifier
         print("-------------------------")
 
-def insert_main_gui_data(gui_cat_list):
+def insert_main_gui_data(gui_cat_list, server_data):
         db_conn_main = pymysql.connect('192.168.1.102', 'root', 'onmobile', 'test_data')
         cursor_main = db_conn_main.cursor()
-        main_data_insert_query = "INSERT INTO main_gui_data (server_ip, cat_a_color, cat_b_color) VALUES (%s)" %(gui_cat_list)
+        main_data_insert_query = "INSERT INTO gui_main_data (server_ip, amber_color, server_type, monitor_time) VALUES (%s, \'%s\', \'%s\')" %(gui_cat_list, server_data, date_default_time)
         print("Main gui insert query is : %s" %main_data_insert_query)
         try:
                 cursor_main.execute(main_data_insert_query)
@@ -159,6 +159,16 @@ def insert_main_gui_data(gui_cat_list):
                 db_conn_main.rollback()
         finally:
                 db_conn_main.close()
+
+def server_type(data_file):
+        with open(data_file, "r") as server_type_data:
+                for ln in range(file_lines_count(data_file)):
+                        rd_line_data = server_type_data.readline()
+                        if "required_server_type=" in rd_line_data:
+                                server_type_value = rd_line_data.split("=")[1].strip()
+                if not server_type_value:
+                        server_type_value = "NA"
+        return server_type_value
 
 def process_data(category_name, main_data_file, ip_addr):
         ind_cat_a_list.append(ip_addr)
@@ -179,6 +189,7 @@ def process_data(category_name, main_data_file, ip_addr):
         tmp_file_lines_cnt = file_lines_count(tmp_file)                         #Getting tmp file lines count by using file_lines_count function
         names_dict = table_heading_dict(main_data_file, category_name)
         disk_cat = memory_cat = load_cat = java_cat = mysql_cat = O3_cat = False
+        process_data.server_type_details = server_type(main_data_file)
 
         def remove_blanks():
                 headings_list = list(names_dict.values())
@@ -380,7 +391,7 @@ def list_paths(path_name):
                                 files_list.append(os.path.join(r,files))
         print("File names are : %s" % files_list)
 
-list_paths("/opt/Flask_APP/data_process/server_status_log_files")
+list_paths("/opt/Flask_APP/server_status/data_processing/server_status_log_files")
 
 def call_process_data(server_log_file):
         threshold_limits(server_log_file)
@@ -398,6 +409,6 @@ if __name__ == "__main__":
         for list_file_name in files_list:
                 print("File name is : %s" %list_file_name)
                 call_process_data(list_file_name)
-                server_indicator_color(ind_cat_a_list, ind_cat_b_list)
+                server_indicator_color(ind_cat_a_list, ind_cat_b_list, process_data.server_type_details)
                 ind_cat_a_list.clear()
                 ind_cat_b_list.clear()
