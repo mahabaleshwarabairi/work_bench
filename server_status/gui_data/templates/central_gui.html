@@ -64,7 +64,7 @@
 
                         <tr align='center'>
                                 <td>{{ server_data.id }}</td>
-                                <td><a href="{{ url_for('display_server_data', server_ip=ip_addrs ) }}" target="_blank">{{ server_data.server_ip }}</a></td>
+                                <td><a href="{{ url_for('display_server_data', ip=ip_addrs ) }}" target="_blank">{{ server_data.server_ip }}</a></td>
                                 <td>{{ server_data.server_type }}</td>
                                 <td>{{ server_data.monitor_time }}</td>
                                 <td>{{ server_data.amber_color }}</td>
