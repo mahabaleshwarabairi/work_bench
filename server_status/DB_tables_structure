@@ -1,0 +1,12 @@
++---------------------+
+| Tables_in_test_data |
++---------------------+
+| O3_process_stats    |
+| disk_space_stats    |
+| free_memory_stats   |
+| gui_main_data       |
+| java_process_stats  |
+| load_average_stats  |
+| logged_users_stats  |
+| mysql_process_stats |
++---------------------+
