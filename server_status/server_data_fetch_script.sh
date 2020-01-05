@@ -6,7 +6,7 @@ log_fl="/var/tmp/status.log"
 function disk_space_stats()
 {
         disk_drives=($(df -P | grep -v Used | awk '{print $6}'))
-        echo "disk_space_stats#header_Drive_name---Total_size---Size_used---Available_size---Use_percentage" >> $log_fl
+        echo "disk_space_stats#header_drive_name---total_size---size_used---available_size---use_percent" >> $log_fl
         for (( i=0; i<${#disk_drives[@]}; i++ ))
         do
                 #echo "Disk drive ${disk_drives[$i]} stats:"
@@ -28,7 +28,7 @@ function disk_space_stats()
 
 function free_memory_stats()
 {
-        echo "free_memory_stats#header_memory_type---total---used---free---shared---buffers---cached" >> $log_fl
+        echo "free_memory_stats#header_memory_type---total_memory---used_memory---free_memory---shared_memory---buffers---cached" >> $log_fl
         memory_stats=$(free -g | awk '/Mem:/ {print ($2==""?"NA":$2)"---"($3==""?"NA":$3)"---"($4==""?"NA":$4)"---"($5==""?"NA":$5)"---"($6==""?"NA":$6)"---"($7==""?"NA":$7)}')
         buffers_stats=$(free -g | awk '/buffers\/cache:/ {print "NA---"($3==""?"NA":$3)"---"($4==""?"NA":$4)"---"($5==""?"NA":$5)"---"($6==""?"NA":$6)"---"($7==""?"NA":$7)}')
         swap_stats=$(free -g | awk '/Swap:/ {print ($2==""?"NA":$2)"---"($3==""?"NA":$3)"---"($4==""?"NA":$4)"---"($5==""?"NA":$5)"---"($6==""?"NA":$6)"---"($7==""?"NA":$7)}')
@@ -39,7 +39,7 @@ function free_memory_stats()
 
 function load_average_stats()
 {
-        echo "load_average_stats#header_no_of_users---uptime---1_minute---5_minute---15_minute" >> $log_fl
+        echo "load_average_stats#header_no_of_users---uptime---one_minute_average---five_minute_average---fifteen_minute_average" >> $log_fl
         uptime_stats=$(uptime | grep -ohe 'up .*user*' | awk '{gsub ( "user*","" ); print $0 }' | sed 's/,//g' | sed -r 's/(\S+\s+){1}//' | awk '{$NF=""}1')
         no_of_users_stats=$(uptime | grep -ohe '[0-9.*] user[s,]'| sed 's/,//g')
         load_average_stats=$(uptime | grep -ohe 'load average[s:][: ].*' | sed 's/,//g' | awk '{ print $3"---"$4"---"$5}')
@@ -82,16 +82,16 @@ function mysql_process_stats()
 
 function ozone_process_stats()
 {
-	o3_process_cnt=$(ps -ef | grep O3 | grep -v grep | wc -l)
-	echo "O3_process_stats#header__username---process_id---parent_process_id---processor_utilization---start_time---process_address" >> $log_fl
-	if [[ o3_process_cnt -ge 1 ]]
-	then
-		O3_process_stats=$(ps -ef | grep O3 | grep -v grep | awk -vOFS=, '{print $1"---"$2"---"$3"---"$4"---"$5;$1=$2=$3=$4=$5=$6=$7="";print "---"$0}' |  sed '/^\s*$/d' |   sed 's/,//g' | tr '\n' '#' | sed 's/#---/---/g' | tr '#' '\n'  | sed 's/^/O3_process_stats#/g' | egrep -v 'seds|#/g')
-		echo "${O3_process_stats}" >> $log_fl
-	else
-		o3_process_cnt=0
-		echo "O3_process_stats#NA---NA---NA---NA---NA---NO_O3_COMPONENTS_RUNNING" >> $log_fl
-	fi
+        o3_process_cnt=$(ps -ef | grep O3 | grep -v grep | wc -l)
+        echo "O3_process_stats#header_username---process_id---parent_process_id---processor_utilization---start_time---process_address" >> $log_fl
+        if [[ o3_process_cnt -ge 1 ]]
+        then
+                O3_process_stats=$(ps -ef | grep O3 | grep -v grep | awk -vOFS=, '{print $1"---"$2"---"$3"---"$4"---"$5;$1=$2=$3=$4=$5=$6=$7="";print "---"$0}' |  sed '/^\s*$/d' |   sed 's/,//g' | tr '\n' '#' | sed 's/#---/---/g' | tr '#' '\n'  | sed 's/^/O3_process_stats#/g' | egrep -v 'seds|#/g')
+                echo "${O3_process_stats}" >> $log_fl
+        else
+                o3_process_cnt=0
+                echo "O3_process_stats#NA---NA---NA---NA---NA---NO_O3_COMPONENTS_RUNNING" >> $log_fl
+        fi
 }
 
 function disk_controler_status()
