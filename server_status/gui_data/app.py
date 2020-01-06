@@ -1,5 +1,7 @@
 from flask import Flask, request, render_template, flash, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
+import time
+import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:onmobile@vmbox1.centos7/test_data'
@@ -206,8 +208,25 @@ def main_gui():
 
 @app.route('/ss/<ip>')
 def display_server_data(ip):
-        disk_space = DiskSpaceStats.query.filter_by(server_ip=ip).all()
-        return render_template("server_details.html", disk_space = disk_space, title_ip = ip)
+        def date_time_minute():
+                full_date_with_millies = datetime.datetime.now()
+                date_time_minutes = full_date_with_millies.strftime("%Y%m%d%H")
+                minute = str(full_date_with_millies.minute)
+                minute_len = len(str(minute))
+                if (minute_len == 1):
+                        minute = '0' + minute
+                minute = str(minute[:-1]) + '0'
+                date_minute = str(date_time_minutes) + str(minute)
+                return date_minute
+
+        disk_space = DiskSpaceStats.query.filter_by(server_ip=ip, monitor_time='202001061200').all()
+        free_memory = FreeMemoryStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        load_average = LoadAverageStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        logged_users = LoggedUsersStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        java_process = JavaProcessStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        mysql_process = MysqlProcessStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        O3_process = O3ProcessStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        return render_template("server_details.html", disk_space = disk_space, free_memory = free_memory, load_average = load_average, logged_users = logged_users, java_process = java_process, mysql_process = mysql_process, O3_process = O3_process, title_ip = ip)
 
 
 if __name__ == "__main__":
