@@ -116,14 +116,14 @@ def server_indicator_color(cat_a_list, cat_b_list, server_details):
                 cat_b_list.remove("cat_b_False")
 
         if "cat_a_True" in cat_a_list:
-                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_True', 'red'), cat_a_list))
+                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_True', 'a_red'), cat_a_list))
         else:
-                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_False', 'green'), cat_a_list))
+                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_False', 'c_green'), cat_a_list))
 
         if "cat_b_True" in cat_b_list:
-                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_True', 'yellow'), cat_b_list))
+                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_True', 'b_yellow'), cat_b_list))
         else:
-                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_False', 'green'), cat_b_list))
+                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_False', 'c_green'), cat_b_list))
         cat_a_list.sort(key=str)
         cat_b_list.sort(key=str)
         print("cat a list is : %s"%(cat_a_list))
@@ -134,8 +134,8 @@ def server_indicator_color(cat_a_list, cat_b_list, server_details):
         list_str_b = str(cat_b_list).replace('[', '')
         list_str_b = str(list_str_b).replace(']', '')
 
-        cat_a_identifier = list_str_a.find('red')
-        cat_b_identifier = list_str_b.find('yellow')
+        cat_a_identifier = list_str_a.find('a_red')
+        cat_b_identifier = list_str_b.find('b_yellow')
 
         if cat_a_identifier >= 0:
                 insert_main_gui_data(list_str_a, server_details)
@@ -145,8 +145,24 @@ def server_indicator_color(cat_a_list, cat_b_list, server_details):
                 insert_main_gui_data(list_str_b, server_details)          # Passing one of the list because both having green identifier
         print("-------------------------")
 
+def delete_main_gui_data():
+        db_con_del = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
+        del_cursor = db_con_del.cursor()
+        delete_query = "DELETE FROM gui_main_data"
+        try:
+                del_cursor.execute(delete_query)
+                del_cursor.execute("ALTER TABLE gui_main_data AUTO_INCREMENT = 1")
+                db_con_del.commit()
+                print("Main gui data deleted successfully and auto increment set to 1")
+        except Exception as de:
+                print("Delete data exception is : %s" %de)
+                db_con_del.rollback()
+        finally:
+                db_con_del.close()
+
+
 def insert_main_gui_data(gui_cat_list, server_data):
-        db_conn_main = pymysql.connect('192.168.1.102', 'root', 'onmobile', 'test_data')
+        db_conn_main = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
         cursor_main = db_conn_main.cursor()
         main_data_insert_query = "INSERT INTO gui_main_data (server_ip, amber_color, server_type, monitor_time) VALUES (%s, \'%s\', \'%s\')" %(gui_cat_list, server_data, date_default_time)
         print("Main gui insert query is : %s" %main_data_insert_query)
@@ -311,7 +327,7 @@ def process_data(category_name, main_data_file, ip_addr):
 
                         elif category_name == "O3_process_stats":
                                 process_addrs = splt_data1[5]
-                                process_utilization = int(splt_data1[3])
+                                process_utilization = splt_data1[3]
                                 if str(process_utilization) == "NA":
                                         process_utilization = 0
                                 else:
@@ -365,7 +381,7 @@ def process_data(category_name, main_data_file, ip_addr):
         print("")
 
 def insert_data(tbl_category_name, tbl_headings_data, tbl_values_data, tbl_monitor_time, tbl_ip_addr, tbl_ind_color):
-        db_conn = pymysql.connect('192.168.1.102', 'root', 'onmobile', 'test_data')
+        db_conn = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
         cursor = db_conn.cursor()
         #insert_query = "INSERT INTO test_table (id, username, email) VALUES ('%d', '%s', '%s')" %(id, username, email)
         insert_query = "INSERT INTO %s (%s) VALUES (\'%s\', %s,\'%s\',\'%s\', \'%s\')" %(tbl_category_name, tbl_headings_data, tbl_ip_addr, tbl_values_data, tbl_monitor_time, date_default_time, tbl_ind_color)
@@ -406,6 +422,8 @@ def call_process_data(server_log_file):
                         process_data(tbl_name[l].strip(), server_log_file, ip_addr)
 
 if __name__ == "__main__":
+        delete_main_gui_data()
+        os.system("sh /opt/Flask_APP/server_status/data_processing/server_status_log_files/scp_data.sh")
         for list_file_name in files_list:
                 print("File name is : %s" %list_file_name)
                 call_process_data(list_file_name)
