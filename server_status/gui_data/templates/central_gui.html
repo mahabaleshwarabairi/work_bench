@@ -1,7 +1,8 @@
 <html>
         <head>
                 <title>Server Status - Central GUI</title>
-                <style>
+                <script type="text/javascript" src="/static/date_time.js"></script>
+                <!-- <style>
                         table {
                                 border-collapse: collapse;
                               }
@@ -28,7 +29,8 @@
                                 font-family: Verdana, Geneva, sans-serif;
                                 font-size: 10px;
                                 }
-                </style>
+                </style> -->
+        <link type="text/css" rel="stylesheet" href="/static/table_style.css">
         </head>
 
         <body>
@@ -36,15 +38,17 @@
                 {% for message in get_flashed_messages() %}
                         {{ message }}
                 {% endfor %}
-
-        <table border='1' align='center'>
+        <div class="table-wrapper">
+        <span id="date_time"></span>
+        <script type="text/javascript">window.onload = date_time('date_time');</script>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
-                                <th>Id</th>
+                                <th>SNo</th>
                                 <th>Server IP</th>
                                 <th>Server Type</th>
                                 <th>Monitor Time</th>
-                                <th>Indicator</th>
+                                <!-- <th>Indicator</th> -->
                                 <th>Color</th>
                         </tr>
                 </thead>
@@ -52,29 +56,29 @@
                         {% for server_data in server_details %}
                         {% set ip_addrs = server_data.server_ip %}
 
-                        {% if server_data.amber_color == "green" %}
+                        {% if server_data.amber_color == "c_green" %}
                                 {% set indicator_img = "static/green_indicator.png" %}
-                        {% elif server_data.amber_color == "red" %}
+                        {% elif server_data.amber_color == "a_red" %}
                                 {% set indicator_img = "static/red_indicator.png" %}
-                        {% elif server_data.amber_color == "yellow" %}
+                        {% elif server_data.amber_color == "b_yellow" %}
                                 {% set indicator_img = "static/yellow_indicator.png" %}
                         {% else %}
                                 {% set indicator_img = "static/blue_indicator.png" %}
                         {% endif %}
 
                         <tr align='center'>
-                                <td>{{ server_data.id }}</td>
-                                <td><a href="{{ url_for('display_server_data', ip=ip_addrs ) }}" target="_blank">{{ server_data.server_ip }}</a></td>
+                                <td>{{ loop.index }}</td>
+                                <td><a href="{{ url_for('display_server_data', ip=ip_addrs) }}" target='_blank'>{{ server_data.server_ip }}</a></td>
                                 <td>{{ server_data.server_type }}</td>
                                 <td>{{ server_data.monitor_time }}</td>
-                                <td>{{ server_data.amber_color }}</td>
+                                <!-- <td>{{ server_data.amber_color }}</td> -->
                                 <td><input type='image' title='amber_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
                 </tbody>
         </table>
         <br><br><br><br>
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th height="20">Color</th>
@@ -97,5 +101,6 @@
                 </tbody>
                 </thead>
         </table>
+        </div>
         </body>
 </html>
