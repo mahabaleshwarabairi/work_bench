@@ -1,7 +1,7 @@
 <html>
         <head>
                 <title>{{ title_ip }} Server Details</title>
-                <style>
+                <!-- <style>
                         table {
                                 border-collapse: collapse;
                                 }
@@ -28,11 +28,13 @@
                                 font-family: Verdana, Geneva, sans-serif;
                                 font-size: 10px;
                                 }
-                </style>
+                </style> -->
+        <link type="text/css" rel="stylesheet" href="/static/table_style.css">
         </head>
 
         <body>
-                <table border='0' style="width:50%" align='center'>
+        <div class="table-wrapper">
+                <table border='0' style="width:50%" align='center' class="fl-table">
                 <tr>
                         <td align='middle' class='td_data'>Server Details</td>
                         <td align='middle' class='td_data'><a href="{{ url_for('main_gui') }}">Home Page</a></td>
@@ -43,7 +45,7 @@
                         {{ message }}
                 {% endfor %}
 
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -54,7 +56,7 @@
                                 <th>Use Percent</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                                <!-- <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -82,14 +84,14 @@
                                 <td>{{ server_data.use_percent }}</td>
                                 <td>{{ server_data.monitor_time }}</td>
                                 <td>{{ server_data.data_insert_time }}</td>
-                                <td>{{ server_data.indicator_status }}</td>
+                                <!-- <td>{{ server_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
                 </tbody>
         </table>
         <br><br>
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -102,7 +104,7 @@
                                 <th>Cached</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                                <!-- <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -132,7 +134,7 @@
                                 <td>{{ memory_data.cached }}</td>
                                 <td>{{ memory_data.monitor_time }}</td>
                                 <td>{{ memory_data.data_insert_time }}</td>
-                                <td>{{ memory_data.indicator_status }}</td>
+                               <!-- <td>{{ memory_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
@@ -140,7 +142,7 @@
         </table>
         <br><br>
 
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -151,7 +153,7 @@
                                 <th>15 Minuted</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                               <!--  <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -178,7 +180,7 @@
                                 <td>{{ load_data.fifteen_minute_average }}</td>
                                 <td>{{ load_data.monitor_time }}</td>
                                 <td>{{ load_data.data_insert_time }}</td>
-                                <td>{{ load_data.indicator_status }}</td>
+                               <!--  <td>{{ load_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
@@ -186,7 +188,7 @@
         </table>
         <br><br>
 
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -197,7 +199,7 @@
                                 <th>Idle Time</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                               <!--  <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -224,7 +226,7 @@
                                 <td>{{ users_data.idle_time }}</td>
                                 <td>{{ users_data.monitor_time }}</td>
                                 <td>{{ users_data.data_insert_time }}</td>
-                                <td>{{ users_data.indicator_status }}</td>
+                              <!--  <td>{{ users_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
@@ -232,7 +234,7 @@
         </table>
         <br><br>
 
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -244,7 +246,7 @@
                                 <th>Process Address</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                               <!-- <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -272,7 +274,7 @@
                                 <td>{{ java_data.process_address }}</td>
                                 <td>{{ java_data.monitor_time }}</td>
                                 <td>{{ java_data.data_insert_time }}</td>
-                                <td>{{ java_data.indicator_status }}</td>
+                               <!-- <td>{{ java_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
@@ -280,7 +282,7 @@
         </table>
         <br><br>
 
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -292,7 +294,7 @@
                                 <th>Process Address</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                               <!-- <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -320,7 +322,7 @@
                                 <td>{{ mysql_data.process_address }}</td>
                                 <td>{{ mysql_data.monitor_time }}</td>
                                 <td>{{ mysql_data.data_insert_time }}</td>
-                                <td>{{ mysql_data.indicator_status }}</td>
+                               <!-- <td>{{ mysql_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
@@ -328,7 +330,7 @@
         </table>
         <br><br>
 
-        <table border='1' align='center'>
+        <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr align='center'>
                                 <th>Server IP</th>
@@ -340,7 +342,7 @@
                                 <th>Process Address</th>
                                 <th>Monitoring Time</th>
                                 <th>Data Inserted Time</th>
-                                <th>Color</th>
+                               <!-- <th>Color</th> -->
                                 <th>Status</th>
                         </tr>
                 </thead>
@@ -368,15 +370,13 @@
                                 <td>{{ O3_data.process_address }}</td>
                                 <td>{{ O3_data.monitor_time }}</td>
                                 <td>{{ O3_data.data_insert_time }}</td>
-                                <td>{{ O3_data.indicator_status }}</td>
+                               <!-- <td>{{ O3_data.indicator_status }}</td> -->
                                 <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                         </tr>
                         {% endfor %}
                 </tbody>
         </table>
         <br><br>
-
-
-
+        </div>
         </body>
 </html>
