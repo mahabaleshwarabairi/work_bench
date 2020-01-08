@@ -34,12 +34,12 @@
 
         <body>
         <div class="table-wrapper">
-                <table border='0' style="width:50%" align='center' class="fl-table">
+                <!-- <table border='0' style="width:50%" align='center' class="fl-table">
                 <tr>
                         <td align='middle' class='td_data'>Server Details</td>
                         <td align='middle' class='td_data'><a href="{{ url_for('main_gui') }}">Home Page</a></td>
                 </tr>
-                </table>
+                </table> -->
 
                 {% for message in get_flashed_messages() %}
                         {{ message }}
@@ -47,6 +47,9 @@
 
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='9'>DISK SPACE STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>Drive Name</th>
@@ -62,37 +65,46 @@
                 </thead>
 
                 <tbody>
-                        {% for server_data in disk_space %}
-                        {% set ip_addrs = server_data.server_ip %}
+                        {% if disk_space|length >= 1%}
+                                {% for server_data in disk_space %}
+                                {% set ip_addrs = server_data.server_ip %}
 
-                        {% if server_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif server_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif server_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if server_data.indicator_status == "green" %}
+                                        {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif server_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif server_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                        {% set indicator_img = "/static/blue_indicator.png" %}
+                                {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ server_data.server_ip }}</td>
+                                        <td>{{ server_data.drive_name }}</td>
+                                        <td>{{ server_data.total_size }}</td>
+                                        <td>{{ server_data.size_used }}</td>
+                                        <td>{{ server_data.available_size }}</td>
+                                        <td>{{ server_data.use_percent }}</td>
+                                        <td>{{ server_data.monitor_time }}</td>
+                                        <td>{{ server_data.data_insert_time }}</td>
+                                        <!-- <td>{{ server_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="9">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ server_data.server_ip }}</td>
-                                <td>{{ server_data.drive_name }}</td>
-                                <td>{{ server_data.total_size }}</td>
-                                <td>{{ server_data.size_used }}</td>
-                                <td>{{ server_data.available_size }}</td>
-                                <td>{{ server_data.use_percent }}</td>
-                                <td>{{ server_data.monitor_time }}</td>
-                                <td>{{ server_data.data_insert_time }}</td>
-                                <!-- <td>{{ server_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='11'>FREE MEMORY STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>Memory Type</th>
@@ -110,40 +122,49 @@
                 </thead>
 
                 <tbody>
-                        {% for memory_data in free_memory %}
-                        {% set ip_addrs = memory_data.server_ip %}
+                        {% if free_memory|length >= 1%}
+                                {% for memory_data in free_memory %}
+                                {% set ip_addrs = memory_data.server_ip %}
 
-                        {% if memory_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif memory_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif memory_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if memory_data.indicator_status == "green" %}
+                                       {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif memory_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif memory_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                        {% set indicator_img = "/static/blue_indicator.png" %}
+                                {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ memory_data.server_ip }}</td>
+                                        <td>{{ memory_data.memory_type }}</td>
+                                        <td>{{ memory_data.total_memory }}</td>
+                                        <td>{{ memory_data.used_memory }}</td>
+                                        <td>{{ memory_data.free_memory }}</td>
+                                        <td>{{ memory_data.shared_memory }}</td>
+                                        <td>{{ memory_data.buffers }}</td>
+                                        <td>{{ memory_data.cached }}</td>
+                                        <td>{{ memory_data.monitor_time }}</td>
+                                        <td>{{ memory_data.data_insert_time }}</td>
+                                       <!-- <td>{{ memory_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="11">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ memory_data.server_ip }}</td>
-                                <td>{{ memory_data.memory_type }}</td>
-                                <td>{{ memory_data.total_memory }}</td>
-                                <td>{{ memory_data.used_memory }}</td>
-                                <td>{{ memory_data.free_memory }}</td>
-                                <td>{{ memory_data.shared_memory }}</td>
-                                <td>{{ memory_data.buffers }}</td>
-                                <td>{{ memory_data.cached }}</td>
-                                <td>{{ memory_data.monitor_time }}</td>
-                                <td>{{ memory_data.data_insert_time }}</td>
-                               <!-- <td>{{ memory_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
 
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='9'>LOAD AVERAGE STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>No.of Users</th>
@@ -158,38 +179,47 @@
                         </tr>
                 </thead>
                 <tbody>
-                        {% for load_data in load_average %}
-                        {% set ip_addrs = load_data.server_ip %}
+                        {% if load_average|length >= 1 %}
+                                {% for load_data in load_average %}
+                                {% set ip_addrs = load_data.server_ip %}
 
-                        {% if load_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif load_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif load_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if load_data.indicator_status == "green" %}
+                                        {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif load_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif load_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                        {% set indicator_img = "/static/blue_indicator.png" %}
+                                {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ load_data.server_ip }}</td>
+                                        <td>{{ load_data.no_of_users }}</td>
+                                        <td>{{ load_data.uptime }}</td>
+                                        <td>{{ load_data.one_minute_average }}</td>
+                                        <td>{{ load_data.five_minute_average }}</td>
+                                        <td>{{ load_data.fifteen_minute_average }}</td>
+                                        <td>{{ load_data.monitor_time }}</td>
+                                        <td>{{ load_data.data_insert_time }}</td>
+                                        <!--  <td>{{ load_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="9">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ load_data.server_ip }}</td>
-                                <td>{{ load_data.no_of_users }}</td>
-                                <td>{{ load_data.uptime }}</td>
-                                <td>{{ load_data.one_minute_average }}</td>
-                                <td>{{ load_data.five_minute_average }}</td>
-                                <td>{{ load_data.fifteen_minute_average }}</td>
-                                <td>{{ load_data.monitor_time }}</td>
-                                <td>{{ load_data.data_insert_time }}</td>
-                               <!--  <td>{{ load_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
 
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='9'>LOGGED USERS STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>Username</th>
@@ -204,38 +234,47 @@
                         </tr>
                 </thead>
                 <tbody>
-                        {% for users_data in logged_users %}
-                        {% set ip_addrs = users_data.server_ip %}
+                        {% if logged_users|length >= 1 %}
+                                {% for users_data in logged_users %}
+                                {% set ip_addrs = users_data.server_ip %}
 
-                        {% if users_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif users_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif users_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if users_data.indicator_status == "green" %}
+                                        {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif users_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif users_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                        {% set indicator_img = "/static/blue_indicator.png" %}
+                                {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ users_data.server_ip }}</td>
+                                        <td>{{ users_data.username }}</td>
+                                        <td>{{ users_data.terminal }}</td>
+                                        <td>{{ users_data.logged_in_from }}</td>
+                                        <td>{{ users_data.login_time }}</td>
+                                        <td>{{ users_data.idle_time }}</td>
+                                        <td>{{ users_data.monitor_time }}</td>
+                                        <td>{{ users_data.data_insert_time }}</td>
+                                      <!--  <td>{{ users_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="9">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ users_data.server_ip }}</td>
-                                <td>{{ users_data.username }}</td>
-                                <td>{{ users_data.terminal }}</td>
-                                <td>{{ users_data.logged_in_from }}</td>
-                                <td>{{ users_data.login_time }}</td>
-                                <td>{{ users_data.idle_time }}</td>
-                                <td>{{ users_data.monitor_time }}</td>
-                                <td>{{ users_data.data_insert_time }}</td>
-                              <!--  <td>{{ users_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
 
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='10'>JAVA PROCESS STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>Username</th>
@@ -251,39 +290,48 @@
                         </tr>
                 </thead>
                 <tbody>
-                        {% for java_data in java_process %}
-                        {% set ip_addrs = java_data.server_ip %}
+                        {% if java_process|length >= 1 %}
+                                {% for java_data in java_process %}
+                                {% set ip_addrs = java_data.server_ip %}
 
-                        {% if java_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif java_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif java_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if java_data.indicator_status == "green" %}
+                                        {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif java_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif java_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                       {% set indicator_img = "/static/blue_indicator.png" %}
+                               {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ java_data.server_ip }}</td>
+                                        <td>{{ java_data.username }}</td>
+                                        <td>{{ java_data.process_id }}</td>
+                                        <td>{{ java_data.parent_process_id }}</td>
+                                        <td>{{ java_data.processor_utilization }}</td>
+                                        <td>{{ java_data.start_time }}</td>
+                                        <td>{{ java_data.process_address }}</td>
+                                        <td>{{ java_data.monitor_time }}</td>
+                                        <td>{{ java_data.data_insert_time }}</td>
+                                       <!-- <td>{{ java_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="10">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ java_data.server_ip }}</td>
-                                <td>{{ java_data.username }}</td>
-                                <td>{{ java_data.process_id }}</td>
-                                <td>{{ java_data.parent_process_id }}</td>
-                                <td>{{ java_data.processor_utilization }}</td>
-                                <td>{{ java_data.start_time }}</td>
-                                <td>{{ java_data.process_address }}</td>
-                                <td>{{ java_data.monitor_time }}</td>
-                                <td>{{ java_data.data_insert_time }}</td>
-                               <!-- <td>{{ java_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
 
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='10'>MYSQL PROCESS STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>Username</th>
@@ -299,39 +347,48 @@
                         </tr>
                 </thead>
                 <tbody>
-                        {% for mysql_data in mysql_process %}
-                        {% set ip_addrs = mysql_data.server_ip %}
+                        {% if mysql_process|length >=1 %}
+                                {% for mysql_data in mysql_process %}
+                                {% set ip_addrs = mysql_data.server_ip %}
 
-                        {% if mysql_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif mysql_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif mysql_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if mysql_data.indicator_status == "green" %}
+                                        {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif mysql_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif mysql_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                        {% set indicator_img = "/static/blue_indicator.png" %}
+                                {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ mysql_data.server_ip }}</td>
+                                        <td>{{ mysql_data.username }}</td>
+                                        <td>{{ mysql_data.process_id }}</td>
+                                        <td>{{ mysql_data.parent_process_id }}</td>
+                                        <td>{{ mysql_data.processor_utilization }}</td>
+                                        <td>{{ mysql_data.start_time }}</td>
+                                        <td>{{ mysql_data.process_address }}</td>
+                                        <td>{{ mysql_data.monitor_time }}</td>
+                                        <td>{{ mysql_data.data_insert_time }}</td>
+                                       <!-- <td>{{ mysql_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="10">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ mysql_data.server_ip }}</td>
-                                <td>{{ mysql_data.username }}</td>
-                                <td>{{ mysql_data.process_id }}</td>
-                                <td>{{ mysql_data.parent_process_id }}</td>
-                                <td>{{ mysql_data.processor_utilization }}</td>
-                                <td>{{ mysql_data.start_time }}</td>
-                                <td>{{ mysql_data.process_address }}</td>
-                                <td>{{ mysql_data.monitor_time }}</td>
-                                <td>{{ mysql_data.data_insert_time }}</td>
-                               <!-- <td>{{ mysql_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
 
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan='10'>O3 PROCESS STATUS</th>
+                        </tr>
                         <tr align='center'>
                                 <th>Server IP</th>
                                 <th>Username</th>
@@ -347,36 +404,44 @@
                         </tr>
                 </thead>
                 <tbody>
-                        {% for O3_data in O3_process %}
-                        {% set ip_addrs = O3_data.server_ip %}
+                        {% if O3_process|length >= 1 %}
+                                {% for O3_data in O3_process %}
+                                {% set ip_addrs = O3_data.server_ip %}
 
-                        {% if O3_data.indicator_status == "green" %}
-                                {% set indicator_img = "/static/green_indicator.png" %}
-                        {% elif O3_data.indicator_status == "red" %}
-                                {% set indicator_img = "/static/red_indicator.png" %}
-                        {% elif O3_data.indicator_status == "yellow" %}
-                                {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% if O3_data.indicator_status == "green" %}
+                                        {% set indicator_img = "/static/green_indicator.png" %}
+                                {% elif O3_data.indicator_status == "red" %}
+                                        {% set indicator_img = "/static/red_indicator.png" %}
+                                {% elif O3_data.indicator_status == "yellow" %}
+                                        {% set indicator_img = "/static/yellow_indicator.png" %}
+                                {% else %}
+                                        {% set indicator_img = "/static/blue_indicator.png" %}
+                                {% endif %}
+
+                                <tr align='center'>
+                                        <td>{{ O3_data.server_ip }}</td>
+                                        <td>{{ O3_data.username }}</td>
+                                        <td>{{ O3_data.process_id }}</td>
+                                        <td>{{ O3_data.parent_process_id }}</td>
+                                        <td>{{ O3_data.processor_utilization }}</td>
+                                        <td>{{ O3_data.start_time }}</td>
+                                        <td>{{ O3_data.process_address }}</td>
+                                        <td>{{ O3_data.monitor_time }}</td>
+                                        <td>{{ O3_data.data_insert_time }}</td>
+                                       <!-- <td>{{ O3_data.indicator_status }}</td> -->
+                                        <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                </tr>
+                                {% endfor %}
                         {% else %}
-                                {% set indicator_img = "/static/blue_indicator.png" %}
+                                <tr>
+                                        <td colspan="10">No data found</td>
+                                </tr>
                         {% endif %}
-
-                        <tr align='center'>
-                                <td>{{ O3_data.server_ip }}</td>
-                                <td>{{ O3_data.username }}</td>
-                                <td>{{ O3_data.process_id }}</td>
-                                <td>{{ O3_data.parent_process_id }}</td>
-                                <td>{{ O3_data.processor_utilization }}</td>
-                                <td>{{ O3_data.start_time }}</td>
-                                <td>{{ O3_data.process_address }}</td>
-                                <td>{{ O3_data.monitor_time }}</td>
-                                <td>{{ O3_data.data_insert_time }}</td>
-                               <!-- <td>{{ O3_data.indicator_status }}</td> -->
-                                <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
-                        </tr>
-                        {% endfor %}
                 </tbody>
         </table>
         <br><br>
         </div>
+
+
         </body>
 </html>
