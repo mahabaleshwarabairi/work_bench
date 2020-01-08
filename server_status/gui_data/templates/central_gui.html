@@ -34,15 +34,22 @@
         </head>
 
         <body>
-                <h3 align='center'><a href="{{ url_for('main_gui') }}">Server Status - Central GUI</a></h3>
+                <!-- <h3 align='center'><a href="{{ url_for('main_gui') }}">Server Status - Central GUI</a></h3> -->
                 {% for message in get_flashed_messages() %}
                         {{ message }}
                 {% endfor %}
         <div class="table-wrapper">
-        <span id="date_time"></span>
-        <script type="text/javascript">window.onload = date_time('date_time');</script>
+        <!-- <span id="date_time"></span>
+        <script type="text/javascript">window.onload = date_time('date_time');</script> -->
         <table border='1' align='center' class="fl-table">
                 <thead>
+                        <tr>
+                                <th colspan="5">SERVER STATUS -- CENTRAL GUI</th>
+                        </tr>
+                        <tr>
+                                <th colspan="5"><span id="date_time"></span></th>
+                                <script type="text/javascript">window.onload = date_time('date_time');</script>
+                        </tr>
                         <tr align='center'>
                                 <th>SNo</th>
                                 <th>Server IP</th>
@@ -77,26 +84,23 @@
                         {% endfor %}
                 </tbody>
         </table>
-        <br><br><br><br>
+        <br><br><br>
         <table border='1' align='center' class="fl-table">
                 <thead>
-                        <tr align='center'>
-                                <th height="20">Color</th>
+                        <tr>
                                 <th height="20">Category</th>
+                                <th>No issue found</th>
+                                <th>Java, Mysql, O3 Processes</th>
+                                <th>Disk Space, Free Memory, Load Average</th>
                         </tr>
                 </thead>
                 <tbody>
-                        <tr>
-                                <td><input type='image' title='category_color' src='static/green_indicator.png'</td>
-                                <td>No issue found</td>
-                        </tr>
-                        <tr>
-                                <td><input type='image' title='category_color' src='static/red_indicator.png'</td>
-                                <td>Java, Mysql, O3 Processes</td>
-                        </tr>
-                        <tr>
-                                <td><input type='image' title='category_color' src='static/yellow_indicator.png'</td>
-                                <td>Disk Space, Free Memory, Load Average</td>
+                        <tr align='center'>
+                                <td height="20">Color</td>
+                                <td height="20"><input type='image' title='category_color' src='static/green_indicator.png'</td>
+                                <td height="20"><input type='image' title='category_color' src='static/red_indicator.png'</td>
+                                <td height="20"><input type='image' title='category_color' src='static/yellow_indicator.png'</td>
+
                         </tr>
                 </tbody>
                 </thead>
