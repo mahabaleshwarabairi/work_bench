@@ -201,34 +201,44 @@ class O3ProcessStats(db.Model):
                 self.data_insert_time = data_insert_time
                 self.indicator_status = indicator_status
 
+def date_time_minute():
+        full_date_with_millies = datetime.datetime.now()
+        date_time_minutes = full_date_with_millies.strftime("%Y%m%d%H")
+        minute = str(full_date_with_millies.minute)
+        minute_len = len(str(minute))
+        if (minute_len == 1):
+                minute = '0' + minute
+        minute = str(minute[:-1]) + '0'
+        date_minute = str(date_time_minutes) + str(minute)
+        return date_minute
 
 @app.route('/ss')
 def main_gui():
-        return render_template("central_gui.html", server_details = ServerStatus.query.all())
+        return render_template("central_gui.html", server_details = ServerStatus.query.order_by("amber_color").all())
 
 @app.route('/ss/<ip>')
 def display_server_data(ip):
-        def date_time_minute():
-                full_date_with_millies = datetime.datetime.now()
-                date_time_minutes = full_date_with_millies.strftime("%Y%m%d%H")
-                minute = str(full_date_with_millies.minute)
-                minute_len = len(str(minute))
-                if (minute_len == 1):
-                        minute = '0' + minute
-                minute = str(minute[:-1]) + '0'
-                date_minute = str(date_time_minutes) + str(minute)
-                return date_minute
-
-        disk_space = DiskSpaceStats.query.filter_by(server_ip=ip, monitor_time='202001061200').all()
-        free_memory = FreeMemoryStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
-        load_average = LoadAverageStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
-        logged_users = LoggedUsersStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
-        java_process = JavaProcessStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
-        mysql_process = MysqlProcessStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
-        O3_process = O3ProcessStats.query.filter_by(server_ip=ip, monitor_time='202001061150').all()
+        disk_space = DiskSpaceStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
+        free_memory = FreeMemoryStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
+        load_average = LoadAverageStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
+        logged_users = LoggedUsersStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
+        java_process = JavaProcessStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
+        mysql_process = MysqlProcessStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
+        O3_process = O3ProcessStats.query.filter_by(server_ip=ip, monitor_time=date_time_minute()).all()
         return render_template("server_details.html", disk_space = disk_space, free_memory = free_memory, load_average = load_average, logged_users = logged_users, java_process = java_process, mysql_process = mysql_process, O3_process = O3_process, title_ip = ip)
+
+@app.route('/id/<server_ip_ind>')
+def indicator_data(server_ip_ind):
+        disk_space_data = DiskSpaceStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        free_memory_data = FreeMemoryStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        load_average_data = LoadAverageStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        logged_users_data = LoggedUsersStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        java_process_data = JavaProcessStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        mysql_process_data = MysqlProcessStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        O3_process_data = O3ProcessStats.query.filter_by(server_ip=server_ip_ind, monitor_time=date_time_minute(), indicator_status ='red').all()
+        return render_template("indicator_details.html", disk_space_data = disk_space_data, free_memory_data = free_memory_data, load_average_data = load_average_data, logged_users_data = logged_users_data, java_process_data = java_process_data, mysql_process_data = mysql_process_data, O3_process_data = O3_process_data, title_ip=server_ip_ind)
 
 
 if __name__ == "__main__":
         db.create_all()
-        app.run(host='0.0.0.0')
+        app.run(host='0.0.0.0', debug=True)
