@@ -79,7 +79,7 @@
                                 <td>{{ server_data.server_type }}</td>
                                 <td>{{ server_data.monitor_time }}</td>
                                 <!-- <td>{{ server_data.amber_color }}</td> -->
-                                <td><input type='image' title='amber_color' src="{{ indicator_img }}" name='indicator_color'></td>
+                                <td><a href="{{ url_for('indicator_data', server_ip_ind = ip_addrs) }}" target="_blank"><input type='image' title='amber_color' src="{{ indicator_img }}" name='indicator_color'></a></td>
                         </tr>
                         {% endfor %}
                 </tbody>
