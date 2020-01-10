@@ -164,7 +164,7 @@ def delete_main_gui_data():
 def insert_main_gui_data(gui_cat_list, server_data):
         db_conn_main = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
         cursor_main = db_conn_main.cursor()
-        main_data_insert_query = "INSERT INTO gui_main_data (server_ip, amber_color, server_type, monitor_time) VALUES (%s, \'%s\', \'%s\')" %(gui_cat_list, server_data, date_default_time)
+        main_data_insert_query = "INSERT INTO gui_main_data (server_ip, amber_color, server_type, application, monitor_time) VALUES (%s, %s, \'%s\')" %(gui_cat_list, server_data, date_default_time)
         print("Main gui insert query is : %s" %main_data_insert_query)
         try:
                 cursor_main.execute(main_data_insert_query)
@@ -177,6 +177,7 @@ def insert_main_gui_data(gui_cat_list, server_data):
                 db_conn_main.close()
 
 def server_type(data_file):
+        server_type_list = []
         with open(data_file, "r") as server_type_data:
                 for ln in range(file_lines_count(data_file)):
                         rd_line_data = server_type_data.readline()
@@ -184,7 +185,21 @@ def server_type(data_file):
                                 server_type_value = rd_line_data.split("=")[1].strip()
                 if not server_type_value:
                         server_type_value = "NA"
-        return server_type_value
+        server_type_list.append(server_type_value)
+
+        with open(data_file, "r") as server_application_data:
+                for ln_nmbr in range(file_lines_count(data_file)):
+                        rd_line_details = server_application_data.readline()
+                        if "required_application=" in rd_line_details:
+                                server_application = rd_line_details.split("=")[1].strip()
+                if not server_application:
+                        server_application = "NA"
+        server_type_list.append(server_application)
+
+        swp_list = str(server_type_list).replace('[', '')
+        new_swp_list = swp_list.replace(']', '')
+        #server_type_details_str = new_swp_list.replace("'", "")
+        return new_swp_list
 
 def process_data(category_name, main_data_file, ip_addr):
         ind_cat_a_list.append(ip_addr)
@@ -423,7 +438,7 @@ def call_process_data(server_log_file):
 
 if __name__ == "__main__":
         delete_main_gui_data()
-        os.system("sh /opt/Flask_APP/server_status/data_processing/server_status_log_files/scp_data.sh")
+        #os.system("sh /opt/Flask_APP/server_status/data_processing/server_status_log_files/scp_data.sh")
         for list_file_name in files_list:
                 print("File name is : %s" %list_file_name)
                 call_process_data(list_file_name)
