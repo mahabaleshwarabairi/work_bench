@@ -1,35 +1,7 @@
 <html>
         <head>
                 <title>{{ title_ip }} Server Details</title>
-                <!-- <style>
-                        table {
-                                border-collapse: collapse;
-                                }
-                        table, td, th, tbody, thead {
-                                border: 1px solid black;
-                                }
-                        th {
-                                height: 20px;
-                                background-color: #E41B17;
-                                color:white;
-                          }
-                        tr {
-                                height: 30px;
-                           }
-                        .footer {
-                                position: fixed;
-                                left: 0;
-                                bottom: 1;
-                                width: 100%;
-                                height: 28px;
-                                background-color: red;
-                                color: white;
-                                text-align: center;
-                                font-family: Verdana, Geneva, sans-serif;
-                                font-size: 10px;
-                                }
-                </style> -->
-        <link type="text/css" rel="stylesheet" href="/static/table_style.css">
+                <link type="text/css" rel="stylesheet" href="/static/table_style.css">
         </head>
 
         <body>
@@ -46,6 +18,11 @@
                 {% endfor %}
 
         <table border='1' align='center' class="fl-table">
+                <thead>
+                        <tr>
+                        <th colspan="9">{{ title_ip }} Server Details &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <button onclick="window.location.href = '/ss';">Home</th>
+                        </tr>
+                </thead>
                 <thead>
                         <tr>
                                 <th colspan='9'>DISK SPACE STATUS</th>
