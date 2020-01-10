@@ -10,6 +10,11 @@
                         {{ message }}
                 {% endfor %}
         <table border='1' align='center' class="fl-table">
+                <thead>
+                        <tr>
+                        <th colspan="9">{{ title_ip }} Server Details &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <button onclick="window.location.href = '/ss';">Home</th>
+                        </tr>
+                </thead>
                 {% if disk_space_data|length >= 1%}
                 <thead>
                         <tr>
