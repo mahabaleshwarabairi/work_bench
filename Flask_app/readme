@@ -17,3 +17,12 @@ Flask Application structure
 2.  Configure nginx 
 3.  Start app service (systemctl start app)
 4.  Start nginx service (systemctl start nginx)
+
+Nginx issue:
+-------------
+nginx[2495]: nginx: [emerg] bind() to 0.0.0.0:8082 failed (13: Permission denied)
+
+semanage port -l | grep http_port_t
+semanage port -a -t http_port_t  -p tcp 8090
+
+https://serverfault.com/questions/566317/nginx-no-permission-to-bind-port-8090-but-it-binds-to-80-and-8080
