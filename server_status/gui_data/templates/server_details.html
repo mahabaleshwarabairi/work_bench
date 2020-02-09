@@ -1,7 +1,35 @@
 <html>
         <head>
                 <title>{{ title_ip }} Server Details</title>
-                <link type="text/css" rel="stylesheet" href="/static/table_style.css">
+                <!-- <style>
+                        table {
+                                border-collapse: collapse;
+                                }
+                        table, td, th, tbody, thead {
+                                border: 1px solid black;
+                                }
+                        th {
+                                height: 20px;
+                                background-color: #E41B17;
+                                color:white;
+                          }
+                        tr {
+                                height: 30px;
+                           }
+                        .footer {
+                                position: fixed;
+                                left: 0;
+                                bottom: 1;
+                                width: 100%;
+                                height: 28px;
+                                background-color: red;
+                                color: white;
+                                text-align: center;
+                                font-family: Verdana, Geneva, sans-serif;
+                                font-size: 10px;
+                                }
+                </style> -->
+        <link type="text/css" rel="stylesheet" href="/static/table_style.css">
         </head>
 
         <body>
@@ -247,6 +275,7 @@
         </table>
         <br><br>
 
+        {% if java_process|length >= 1 %}
         <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr>
@@ -295,15 +324,17 @@
                                         <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                                 </tr>
                                 {% endfor %}
-                        {% else %}
+                <!-- {% else %}
                                 <tr>
                                         <td colspan="10">No data found</td>
                                 </tr>
-                        {% endif %}
+                {% endif %} -->
                 </tbody>
         </table>
+        {% endif %}
         <br><br>
 
+        {% if mysql_process|length >=1 %}
         <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr>
@@ -352,15 +383,17 @@
                                         <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                                 </tr>
                                 {% endfor %}
-                        {% else %}
+                <! -- {% else %}
                                 <tr>
                                         <td colspan="10">No data found</td>
                                 </tr>
-                        {% endif %}
+                {% endif %} -->
                 </tbody>
         </table>
+        {% endif %}
         <br><br>
 
+        {% if O3_process|length >= 1 %}
         <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr>
@@ -409,13 +442,14 @@
                                         <td><input type='image' title='indicator_color' src="{{ indicator_img }}" name='indicator_color'></td>
                                 </tr>
                                 {% endfor %}
-                        {% else %}
+                <!-- {% else %}
                                 <tr>
                                         <td colspan="10">No data found</td>
                                 </tr>
-                        {% endif %}
+                        {% endif %} -->
                 </tbody>
         </table>
+        {% endif %}
         <br><br>
         </div>
 
