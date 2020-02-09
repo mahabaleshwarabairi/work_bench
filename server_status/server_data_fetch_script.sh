@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #set -x
 
 server_ip="10.12.3.86"
