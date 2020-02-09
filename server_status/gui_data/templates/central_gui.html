@@ -1,8 +1,37 @@
 <html>
         <head>
                 <title>Server Status - Central GUI</title>
+                <META HTTP-EQUIV="Refresh" Content="60; URL=http://172.19.0.255:8091/ss">
                 <script type="text/javascript" src="/static/date_time.js"></script>
-                <link type="text/css" rel="stylesheet" href="/static/table_style.css">
+                <!-- <style>
+                        table {
+                                border-collapse: collapse;
+                              }
+                        table, td, th, tbody, thead {
+                                border: 1px solid black;
+                                }
+                        th {
+                                height: 20px;
+                                background-color: #E41B17;
+                                color:white;
+                          }
+                        tr {
+                                height: 30px;
+                           }
+                        .footer {
+                                position: fixed;
+                                left: 0;
+                                bottom: 1;
+                                width: 100%;
+                                height: 28px;
+                                background-color: red;
+                                color: white;
+                                text-align: center;
+                                font-family: Verdana, Geneva, sans-serif;
+                                font-size: 10px;
+                                }
+                </style> -->
+        <link type="text/css" rel="stylesheet" href="/static/table_style.css">
         </head>
 
         <body>
@@ -13,23 +42,26 @@
         <div class="table-wrapper">
         <!-- <span id="date_time"></span>
         <script type="text/javascript">window.onload = date_time('date_time');</script> -->
+        <font size='10'>
         <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr>
-                                <th colspan="6">SERVER STATUS -- CENTRAL GUI</th>
+                                <th colspan="8">SERVER STATUS -- CENTRAL GUI</th>
                         </tr>
                         <tr>
-                                <th colspan="6"><span id="date_time"></span></th>
+                                <th colspan="8"><span id="date_time"></span></th>
                                 <script type="text/javascript">window.onload = date_time('date_time');</script>
                         </tr>
                         <tr align='center'>
                                 <th>SNo</th>
                                 <th>Server IP</th>
+                                <th>Circle</th>
                                 <th>Application</th>
                                 <th>Server Type</th>
                                 <th>Monitor Time</th>
                                 <!-- <th>Indicator</th> -->
                                 <th>Color</th>
+                                <th>Issue</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -49,16 +81,20 @@
                         <tr align='center'>
                                 <td>{{ loop.index }}</td>
                                 <td><a href="{{ url_for('display_server_data', ip=ip_addrs) }}" target='_blank'>{{ server_data.server_ip }}</a></td>
+                                <td>{{ server_data.circle }}</td>
                                 <td>{{ server_data.application }}</td>
                                 <td>{{ server_data.server_type }}</td>
                                 <td>{{ server_data.monitor_time }}</td>
                                 <!-- <td>{{ server_data.amber_color }}</td> -->
                                 <td><a href="{{ url_for('indicator_data', server_ip_ind = ip_addrs) }}" target="_blank"><input type='image' title='amber_color' src="{{ indicator_img }}" name='indicator_color'></a></td>
+                                <td align='left'>{{ server_data.issue }}</td>
                         </tr>
                         {% endfor %}
                 </tbody>
         </table>
-        <br><br><br>
+        </font>
+        <br>
+        <!--
         <table border='1' align='center' class="fl-table">
                 <thead>
                         <tr>
@@ -78,7 +114,7 @@
                         </tr>
                 </tbody>
                 </thead>
-        </table>
+        </table> -->
         </div>
         </body>
 </html>
