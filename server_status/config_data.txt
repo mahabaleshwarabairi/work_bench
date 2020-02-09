@@ -1,5 +1,6 @@
 required_java=yes
 required_mysql=yes
 required_O3=no
+required_circle=TAMILNADU
 required_server_type=WEB_DB_Server
 required_application=RBT
