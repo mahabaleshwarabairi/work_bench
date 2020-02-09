@@ -5,13 +5,14 @@ import os
 import time
 import datetime
 
-#main_data_file = "/var/www/FlaskApp/FlaskApp/status.log"
-data_headings_file = "/var/www/FlaskApp/FlaskApp/data_categories.txt"
-tmp_file = "/var/www/FlaskApp/FlaskApp/tmp_file.txt"
+data_headings_file = "/opt/Flask_APP/server_status/data_processing/data_categories.txt"
+tmp_file = "/opt/Flask_APP/server_status/data_processing/tmp_file.txt"
 table_names_dict = {}
 date_default_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 ind_cat_a_list = []
 ind_cat_b_list = []
+issue_list = []
+server_type_details = ""
 
 def threshold_limits(main_data_file):
         disk_threshold=80
@@ -98,15 +99,35 @@ def get_process_list(process_file_name, process_name, process_lines_count):
         with open(process_file_name, "r") as process_list:
                 for k in range(process_lines_count):
                         process_data = process_list.readline()
-                        if "required_" in process_data:
+                        if "required_" in process_data and not "required_server_type" in process_data:
                                 if process_name in process_data:
                                         process_nm = process_data.split('=')[1]
         return process_nm.strip()
 
-def server_indicator_color(cat_a_list, cat_b_list):
+def process_issue_list(issue_list_file):
+        issue_list_file = list(dict.fromkeys(issue_list_file))
+        issue_list_data_a = str(issue_list_file).replace('[', '')
+        issue_list_data_b = str(issue_list_data_a).replace(']', '')
+        list_data_value = issue_list_data_b
+
+        if len(issue_list_data_b) >= 1:
+                issue_list_data_na = str(issue_list_data_b).replace('NA', '')
+                issue_final_list = str(issue_list_data_na).replace("'',", '')
+                issue_list_unique = str(issue_final_list).replace("'", '')
+                issue_list_space = str(issue_list_unique).replace(" ", '')
+                if len(issue_list_space) >=2:
+                        list_data_value = issue_list_space
+                else:
+                        list_data_value = 'NA'
+        return list_data_value
+
+def server_indicator_color(cat_a_list, cat_b_list, server_details, issue_list_data):
         print("-------------------------")
         cat_a_list = list(set(cat_a_list))
         cat_b_list = list(set(cat_b_list))
+        issue_list_data = process_issue_list(issue_list_data)
+
+        print("Unique issue list is : %s" %issue_list_data)
         #print("cat a indicator list is : %s" %cat_a_list)
         #print("cat b indicator list is : %s" %cat_b_list)
 
@@ -116,32 +137,55 @@ def server_indicator_color(cat_a_list, cat_b_list):
                 cat_b_list.remove("cat_b_False")
 
         if "cat_a_True" in cat_a_list:
-                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_True', 'red'), cat_a_list))
+                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_True', 'a_red'), cat_a_list))
         else:
-                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_False', 'green'), cat_a_list))
+                cat_a_list = list(map(lambda final_list_a: final_list_a.replace('cat_a_False', 'c_green'), cat_a_list))
 
         if "cat_b_True" in cat_b_list:
-                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_True', 'yellow'), cat_b_list))
+                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_True', 'b_yellow'), cat_b_list))
         else:
-                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_False', 'green'), cat_b_list))
-
+                cat_b_list = list(map(lambda final_list_b: final_list_b.replace('cat_b_False', 'c_green'), cat_b_list))
         cat_a_list.sort(key=str)
         cat_b_list.sort(key=str)
-        print("cat a list is : %s" %cat_a_list)
-        print("cat b list is : %s" %cat_b_list)
+        print("cat a list is : %s"%(cat_a_list))
+        print("cat b list is : %s"%(cat_b_list))
+
         list_str_a = str(cat_a_list).replace('[', '')
         list_str_a = str(list_str_a).replace(']', '')
-
         list_str_b = str(cat_b_list).replace('[', '')
         list_str_b = str(list_str_b).replace(']', '')
 
-        insert_main_gui_data(list_str_a)
+        cat_a_identifier = list_str_a.find('a_red')
+        cat_b_identifier = list_str_b.find('b_yellow')
+
+        if cat_a_identifier >= 0:
+                insert_main_gui_data(list_str_a, server_details, issue_list_data)
+        elif cat_b_identifier >= 0:
+                insert_main_gui_data(list_str_b, server_details, issue_list_data)
+        else:
+                insert_main_gui_data(list_str_b, server_details, issue_list_data)          # Passing one of the list because both having green identifier
         print("-------------------------")
 
-def insert_main_gui_data(gui_cat_list):
-        db_conn_main = pymysql.connect('10.12.23.36', 'root', 'onmobile', 'rbt')
+def delete_main_gui_data():
+        db_con_del = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
+        del_cursor = db_con_del.cursor()
+        delete_query = "DELETE FROM gui_main_data"
+        try:
+                del_cursor.execute(delete_query)
+                del_cursor.execute("ALTER TABLE gui_main_data AUTO_INCREMENT = 1")
+                db_con_del.commit()
+                print("Main gui data deleted successfully and auto increment set to 1")
+        except Exception as de:
+                print("Delete data exception is : %s" %de)
+                db_con_del.rollback()
+        finally:
+                db_con_del.close()
+
+
+def insert_main_gui_data(gui_cat_list, server_data, issue_list_data):
+        db_conn_main = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
         cursor_main = db_conn_main.cursor()
-        main_data_insert_query = "INSERT INTO main_gui_data (server_ip, amber_color) VALUES (%s)" %(gui_cat_list)
+        main_data_insert_query = "INSERT INTO gui_main_data (server_ip, amber_color, server_type, application, circle, issue, monitor_time) VALUES (%s, %s, \'%s\', \'%s\')" %(gui_cat_list, server_data, issue_list_data, date_default_time)
         print("Main gui insert query is : %s" %main_data_insert_query)
         try:
                 cursor_main.execute(main_data_insert_query)
@@ -152,6 +196,40 @@ def insert_main_gui_data(gui_cat_list):
                 db_conn_main.rollback()
         finally:
                 db_conn_main.close()
+
+def server_type(data_file):
+        server_type_list = []
+        with open(data_file, "r") as server_type_data:
+                for ln in range(file_lines_count(data_file)):
+                        rd_line_data = server_type_data.readline()
+                        if "required_server_type=" in rd_line_data:
+                                server_type_value = rd_line_data.split("=")[1].strip()
+                if not server_type_value:
+                        server_type_value = "NA"
+        server_type_list.append(server_type_value)
+
+        with open(data_file, "r") as server_application_data:
+                for ln_nmbr in range(file_lines_count(data_file)):
+                        rd_line_details = server_application_data.readline()
+                        if "required_application=" in rd_line_details:
+                                server_application = rd_line_details.split("=")[1].strip()
+                if not server_application:
+                        server_application = "NA"
+        server_type_list.append(server_application)
+
+        with open(data_file, "r") as server_circle_data:
+                for ln_nmbt in range(file_lines_count(data_file)):
+                        rd_circle_data = server_circle_data.readline()
+                        if "required_circle=" in rd_circle_data:
+                                server_circle = rd_circle_data.split("=")[1].strip()
+                if not server_circle:
+                        server_circle = "NA"
+        server_type_list.append(server_circle)
+
+        swp_list = str(server_type_list).replace('[', '')
+        new_swp_list = swp_list.replace(']', '')
+        #server_type_details_str = new_swp_list.replace("'", "")
+        return new_swp_list
 
 def process_data(category_name, main_data_file, ip_addr):
         ind_cat_a_list.append(ip_addr)
@@ -172,6 +250,7 @@ def process_data(category_name, main_data_file, ip_addr):
         tmp_file_lines_cnt = file_lines_count(tmp_file)                         #Getting tmp file lines count by using file_lines_count function
         names_dict = table_heading_dict(main_data_file, category_name)
         disk_cat = memory_cat = load_cat = java_cat = mysql_cat = O3_cat = False
+        process_data.server_type_details = server_type(main_data_file)
 
         def remove_blanks():
                 headings_list = list(names_dict.values())
@@ -192,17 +271,22 @@ def process_data(category_name, main_data_file, ip_addr):
                                 usage_value = splt_data1[4]
                                 usage_value = int(str(usage_value).replace('%', ''))
                                 print("Usage is : %s" %usage_value)
-                                if usage_value >= 80:
+                                if usage_value > 90:
                                         disk_indicator_color = "red"
                                         disk_cat = "cat_b_True"
-                                elif usage_value < 80 and usage_value >= 60:            # cat_b = disk space, free memory, load average -- color code = yellow
+                                        issue_cat_disk = "Disk_Space"
+                                elif usage_value <= 90 and usage_value >= 80:            # cat_b = disk space, free memory, load average -- color code = yellow
                                         disk_indicator_color = "yellow"                 # cat_c = No issue      -- color code = green
                                         disk_cat = "cat_b_True"
+                                        issue_cat_disk = "Disk_Space"
                                 else:
                                         disk_indicator_color = "green"
                                         disk_cat = "cat_b_False"
+                                        issue_cat_disk = "NA"
                                 print("Disk cat value is : %s" %disk_cat)
                                 ind_cat_b_list.append(disk_cat)
+                                issue_list.append(issue_cat_disk)
+                                print("Issue list for disk space is : %s" %issue_list)
                                 #pass
 
                         elif category_name == "free_memory_stats":
@@ -213,19 +297,24 @@ def process_data(category_name, main_data_file, ip_addr):
                                 print("Userd memory is : %s" %used_memory)
                                 print("Total memory is : %s" %total_memory)
                                 memory_percent = (int(used_memory)/int(total_memory)) * 100
-                                if memory_percent >= 80:
+                                if memory_percent > 100:
                                         memory_indicator_color = "red"
                                         memory_cat = "cat_b_True"
-                                elif memory_percent < 80 and memory_percent >=60:
+                                        issue_cat_memory = "Memory"
+                                elif memory_percent <= 100 and memory_percent >=60:
                                         memory_indicator_color = "yellow"
                                         memory_cat = "cat_b_True"
+                                        issue_cat_memory = "Memory"
                                 else:
                                         memory_indicator_color = "green"
                                         memory_cat = "cat_b_False"
+                                        issue_cat_memory = "NA"
                                 print("Memory percentage is : %d" %memory_percent)
                                 print("Memory indicator color is : %s" %memory_indicator_color)
                                 print("memory cat is : %s" %memory_cat)
                                 ind_cat_b_list.append(memory_cat)
+                                issue_list.append(issue_cat_memory)
+                                print("Issue list for memory is : %s" %issue_list)
 
                         elif category_name == "load_average_stats":
                                 one_minute_load = int(float(splt_data1[2]))
@@ -233,16 +322,21 @@ def process_data(category_name, main_data_file, ip_addr):
                                 if one_minute_load >= 10:
                                         load_indicator_color = "red"
                                         load_cat = "cat_b_True"
+                                        issue_cat_load = "Load_Average"
                                 elif one_minute_load < 10 and one_minute_load >= 5:
                                         load_indicator_color = "yellow"
                                         load_cat = "cat_b_True"
+                                        issue_cat_load = "Load_Average"
                                 else:
                                         load_indicator_color = "green"
                                         load_cat = "cat_b_False"
+                                        issue_cat_load = "NA"
                                 print("One minute load is : %d" %one_minute_load)
                                 print("Load color is : %s" %load_indicator_color)
                                 print("load cat is : %s" %load_cat)
                                 ind_cat_b_list.append(load_cat)
+                                issue_list.append(issue_cat_load)
+                                print("Issue list for load average is : %s" %issue_list)
 
                         elif category_name == "java_process_stats":
                                 process_addrs = splt_data1[5]
@@ -253,15 +347,26 @@ def process_data(category_name, main_data_file, ip_addr):
                                         process_utilization = int(splt_data1[3])
 
                                 if process_addrs == "NO_JAVA_PROCESS_RUNNING":
-                                        java_indicator_color = "red"
-                                        java_cat = "cat_a_True"
+                                        if get_process_list(main_data_file, "java", main_data_file_lines_count) == "yes":
+                                                java_indicator_color = "red"
+                                                java_cat = "cat_a_True"
+                                                issue_cat_java = "Java"
+                                        else:
+                                                java_indicator_color = "green"
+                                                java_cat = "cat_a_False"
+                                                issue_cat_java = "NA"
                                 elif process_utilization >= 50:
                                         java_indicator_color = "red"
+                                        issue_cat_java = "Java"
                                 else:
                                         java_indicator_color = "green"
                                         java_cat = "cat_a_False"
+                                        issue_cat_java = "NA"
+
                                 print("java cat is : %s" %java_cat)
                                 ind_cat_a_list.append(java_cat)
+                                issue_list.append(issue_cat_java)
+                                print("Issue list for java is : %s" %issue_list)
 
                         elif category_name == "mysql_process_stats":
                                 process_addrs = splt_data1[5]
@@ -272,34 +377,54 @@ def process_data(category_name, main_data_file, ip_addr):
                                         process_utilization = int(splt_data1[3])
 
                                 if process_addrs == "NO_MYSQL_PROCESS_RUNNING":
-                                        mysql_indicator_color = "red"
-                                        mysql_cat = "cat_a_True"
+                                        if get_process_list(main_data_file, "mysql", main_data_file_lines_count) == "yes":
+                                                mysql_indicator_color = "red"
+                                                mysql_cat = "cat_a_True"
+                                                issue_cat_mysql = "MySql"
+                                        else:
+                                                mysql_indicator_color = "green"
+                                                mysql_cat = "cat_a_False"
+                                                issue_cat_mysql = "NA"
                                 elif process_utilization >=50:
                                         mysql_indicator_color = "red"
+                                        issue_cat_mysql = "MySql"
                                 else:
                                         mysql_indicator_color = "green"
                                         mysql_cat = "cat_a_False"
+                                        issue_cat_mysql = "NA"
                                 print("mysql cat is : %s" %mysql_cat)
                                 ind_cat_a_list.append(mysql_cat)
+                                issue_list.append(issue_cat_mysql)
+                                print("Issue list for mysql is : %s" %issue_list)
 
                         elif category_name == "O3_process_stats":
                                 process_addrs = splt_data1[5]
-                                process_utilization = int(splt_data1[3])
+                                process_utilization = splt_data1[3]
                                 if str(process_utilization) == "NA":
                                         process_utilization = 0
                                 else:
                                         process_utilization = int(splt_data1[3])
 
                                 if process_addrs == "NO_O3_COMPONENTS_RUNNING":
-                                        o3_indicator_color = "red"
-                                        O3_cat = "cat_a_True"
+                                        if get_process_list(main_data_file, "O3", main_data_file_lines_count) == "yes":
+                                                o3_indicator_color = "red"
+                                                O3_cat = "cat_a_True"
+                                                issue_cat_O3 = "O3_Process"
+                                        else:
+                                                o3_indicator_color = "green"
+                                                O3_cat = "cat_a_False"
+                                                issue_cat_O3 = "NA"
                                 elif process_utilization >= 50:
                                         o3_indicator_color = "red"
+                                        issue_cat_O3 = "O3_Process"
                                 else:
                                         o3_indicator_color = "green"
                                         O3_cat = "cat_a_False"
+                                        issue_cat_O3 = "NA"
                                 print("O3 cat is : %s" %O3_cat)
                                 ind_cat_a_list.append(O3_cat)
+                                issue_list.append(issue_cat_O3)
+                                print("Issue list for O3 process is : %s" %issue_list)
 
                         headings_file_data = remove_blanks()
                         values_str = str(splt_data1).replace('[', '')
@@ -334,7 +459,7 @@ def process_data(category_name, main_data_file, ip_addr):
         print("")
 
 def insert_data(tbl_category_name, tbl_headings_data, tbl_values_data, tbl_monitor_time, tbl_ip_addr, tbl_ind_color):
-        db_conn = pymysql.connect('10.12.23.36', 'root', 'onmobile', 'rbt')
+        db_conn = pymysql.connect('vmbox1.centos7', 'root', 'onmobile', 'test_data')
         cursor = db_conn.cursor()
         #insert_query = "INSERT INTO test_table (id, username, email) VALUES ('%d', '%s', '%s')" %(id, username, email)
         insert_query = "INSERT INTO %s (%s) VALUES (\'%s\', %s,\'%s\',\'%s\', \'%s\')" %(tbl_category_name, tbl_headings_data, tbl_ip_addr, tbl_values_data, tbl_monitor_time, date_default_time, tbl_ind_color)
@@ -360,7 +485,7 @@ def list_paths(path_name):
                                 files_list.append(os.path.join(r,files))
         print("File names are : %s" % files_list)
 
-list_paths("/var/www/FlaskApp/FlaskApp/server_status_log_files")
+list_paths("/opt/Flask_APP/server_status/data_processing/server_status_log_files")
 
 def call_process_data(server_log_file):
         threshold_limits(server_log_file)
@@ -375,9 +500,12 @@ def call_process_data(server_log_file):
                         process_data(tbl_name[l].strip(), server_log_file, ip_addr)
 
 if __name__ == "__main__":
+        delete_main_gui_data()
+        os.system("sh /opt/Flask_APP/server_status/data_processing/server_status_log_files/scp_data.sh")
         for list_file_name in files_list:
                 print("File name is : %s" %list_file_name)
                 call_process_data(list_file_name)
-                server_indicator_color(ind_cat_a_list, ind_cat_b_list)
+                server_indicator_color(ind_cat_a_list, ind_cat_b_list, process_data.server_type_details, issue_list)
                 ind_cat_a_list.clear()
                 ind_cat_b_list.clear()
+                issue_list.clear()
