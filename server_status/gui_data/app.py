@@ -17,13 +17,17 @@ class ServerStatus(db.Model):
         server_type = db.Column(db.String(50))
         monitor_time = db.Column(db.DateTime(timezone=True), default=db.func.now())
         application = db.Column(db.String(30))
+        circle = db.Column(db.String(30))
+        issue = db.Column(db.String(200))
 
-        def __init__(self, server_ip, amber_color, server_type, monitor_time, application):
+        def __init__(self, server_ip, amber_color, server_type, monitor_time, application, circle, issue):
                 self.server_ip = server_ip
                 self.amber_color = amber_color
                 self.server_type = server_type
                 self.monitor_time = monitor_time
                 self.application = application
+                self.circle = circle
+                self.issue = issue
 
 class DiskSpaceStats(db.Model):
         __tablename__ = "disk_space_stats"
@@ -243,4 +247,4 @@ def indicator_data(server_ip_ind):
 
 if __name__ == "__main__":
         db.create_all()
-        app.run(host='0.0.0.0')
+        app.run()
