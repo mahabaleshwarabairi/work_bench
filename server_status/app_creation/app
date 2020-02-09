@@ -1,0 +1,10 @@
+server {
+    listen 8091;
+    server_name 0.0.0.0;
+    keepalive_requests 10000000;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/opt/Flask_APP/server_status/app.sock;
+    }
+}
