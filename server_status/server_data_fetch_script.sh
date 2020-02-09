@@ -2,7 +2,25 @@
 
 #set -x
 
-log_fl="/var/tmp/status.log"
+server_ip="10.12.3.86"
+
+log_fl="/var/tmp/${server_ip}_server_status.log"
+config_file="/root/SCRIPTS/SERVER_STATUS/config_data.txt"
+java_list=('RBTGatherer' 'RBTDaemonManager' 'RbtTCPServer' 'voldemort.server.VoldemortServer' 'RBTTomcat')
+mysql_list=('/usr/bin/mysqld_safe' '/usr/sbin/mysqld')
+
+if [[ ! -f $log_fl ]]
+then
+        touch $log_fl
+        chmod 777 $log_fl
+        echo "$(cat $config_file | grep 'required')" >> $log_fl
+
+else
+        cat /dev/null >  $log_fl
+        echo "$(cat $config_file | grep 'required')" >> $log_fl
+        chmod 777 $log_fl
+fi
+
 function disk_space_stats()
 {
         disk_drives=($(df -P | grep -v Used | awk '{print $6}'))
@@ -49,18 +67,29 @@ function load_average_stats()
 function logged_users_stats()
 {
         echo "logged_users_stats#header_username---terminal---logged_in_from---login_time---idle_time" >> $log_fl
-        login_user_stats=$(w| egrep -v 'load|USER' | sed 's/^/logged_users_stats#/g' | awk '{if ($2~"tty" || $2~":0") print $1"---"$2"---DIRECT_LOGIN---"$4"---"$5; else print $1"---"$2"---"$3"---"$4"---"$5}')
+        logged_user_count=$(w | egrep -v 'load|USER' | wc -l)
+        if [[ ${logged_user_count} -ge 1 ]]
+        then
+                login_user_stats=$(w| egrep -v 'load|USER' | sed 's/^/logged_users_stats#/g' | awk '{if ($2~"tty" || $2~":0") print $1"---"$2"---DIRECT_LOGIN---"$4"---"$5; else print $1"---"$2"---"$3"---"$4"---"$5}')
+        else
+                login_user_stats="logged_users_stats#NA---NA---NO_USERS_LOGGED_IN---NA---NA"
+        fi
         echo "${login_user_stats}" >> $log_fl
 }
 
 function java_process_stats()
 {
-        java_process_cnt=$(ps -ef | grep java | grep -v grep | wc -l)
+        java_process_cnt=${#java_list[@]}
+        echo "Java process list is : ${java_process_cnt}"
         echo "java_process_stats#header_username---process_id---parent_process_id---processor_utilization---start_time---process_address" >> $log_fl
         if [[ $java_process_cnt -ge 1 ]]
         then
-                java_process_stats=$(ps -ef | grep java | grep -v grep | awk -vOFS=, '{print $1"---"$2"---"$3"---"$4"---"$5;$1=$2=$3=$4=$5=$6=$7="";print "---"$0}' | sed '/^\s*$/d'|  sed 's/,//g' | tr '\n' '#' | sed 's/#---/---/g' | tr '#' '\n' | sed 's/^/java_process_stats#/g' | egrep -v 'seds|#/g')
-                echo "${java_process_stats}" >> $log_fl
+                for (( i=0; i<${#java_list[@]}; i++ ))
+                do
+                        java_process_name=$(/bin/ps -ef | grep java | grep "${java_list[$i]}" | grep -v grep | sed '/^\s*$/d' | awk -vOFS=, '{print $1"---"$2"---"$3"---"$4"---"$5;$1=$2=$3=$4=$5=$6=$7="";print "---"$0}' | sed '/^\s*$/d'|  sed 's/,//g' | tr '\n' '#' | sed 's/#---/---/g' | tr '#' '\n' | sed 's/^/java_process_stats#/g' | egrep -v 'seds|#/g')
+                        java_process_data=$(echo $java_process_name | awk -F '---' -v process_nm="${java_list[$i]}" '{print $1"---"$2"---"$3"---"$4"---"$5"---"process_nm}')
+                        echo "${java_process_data}" >> $log_fl
+                done
         else
                 java_process_cnt=0
                 echo "java_process_stats#NA---NA---NA---NA---NA---NO_JAVA_PROCESS_RUNNING" >> $log_fl
@@ -68,12 +97,22 @@ function java_process_stats()
 }
 
 function mysql_process_stats()
-{       mysql_process_cnt=$(ps -ef | grep mysql | grep -v grep | wc -l)
+{       mysql_process_cnt=${#mysql_list[@]}
         echo "mysql_process_stats#header_username---process_id---parent_process_id---processor_utilization---start_time---process_address" >> $log_fl
         if [[ $mysql_process_cnt -ge 1 ]]
         then
-                mysql_process_stats=$( ps -ef | grep mysql | grep -v grep | awk -vOFS=, '{print $1"---"$2"---"$3"---"$4"---"$5;$1=$2=$3=$4=$5=$6=$7="";print "---"$0}' | sed '/^\s*$/d'|  sed 's/,//g' | tr '\n' '#' | sed 's/#---/---/g' | tr '#' '\n' | sed 's/^/mysql_process_stats#/g' | egrep -v 'seds|#/g')
-                echo "${mysql_process_stats}" >> $log_fl
+                for (( j=0; j<${#mysql_list[@]}; j++ ))
+                do
+                        mysql_cnt=$(ps -ef | grep mysql | grep ${mysql_list[$j]} | grep -v grep | wc -l)
+                        if [[ ${mysql_cnt} -ge 1 ]]
+                        then
+                                mysql_process_stats=$( ps -ef | grep mysql | grep ${mysql_list[$j]} | grep -v grep | awk -vOFS=, '{print $1"---"$2"---"$3"---"$4"---"$5;$1=$2=$3=$4=$5=$6=$7="";print "---"$0}' | sed '/^\s*$/d'|  sed 's/,//g' | tr '\n' '#' | sed 's/#---/---/g' | tr '#' '\n' | sed 's/^/mysql_process_stats#/g' | egrep -v 'seds|#/g')
+                                mysql_process_data=$(echo ${mysql_process_stats} | awk -F '---' -v process_nm="${mysql_list[$j]}" '{print $1"---"$2"---"$3"---"$4"---"$5"---"process_nm}')
+                        else
+                                mysql_process_data="mysql_process_stats#0---0---0---0---0---NO_MYSQL_PROCESS_RUNNING"
+                        fi
+                        echo "${mysql_process_data}" >> $log_fl
+                done
         else
                 mysql_process_cnt=0
                 echo "mysql_process_stats#NA---NA---NA---NA---NA---NO_MYSQL_PROCESS_RUNNING" >> $log_fl
@@ -98,7 +137,7 @@ function disk_controler_status()
 {
         disk_ctrl_sts=$(hpacucli ctrl all show config | grep -i failed)
 }
-cat /dev/null >  $log_fl
+
 disk_space_stats
 free_memory_stats
 load_average_stats
@@ -106,3 +145,4 @@ logged_users_stats
 java_process_stats
 mysql_process_stats
 ozone_process_stats
+chmod 777 $log_fl
