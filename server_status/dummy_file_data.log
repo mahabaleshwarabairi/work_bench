@@ -1,0 +1,21 @@
+required_java=yes
+required_mysql=yes
+required_O3=yes
+required_circle=ANDHRA_PRADESH
+required_server_type=WEB_DB_Server
+required_application=RBT
+disk_space_stats#header_drive_name---total_size---size_used---available_size---use_percent
+disk_space_stats#/---0---0---0---0%
+disk_space_stats#/boot---0---0---0---0%
+free_memory_stats#header_memory_type---total_memory---used_memory---free_memory---shared_memory---buffers---cached
+free_memory_stats#Memory---1---1---1---1---1---1
+load_average_stats#header_no_of_users---uptime---one_minute_average---five_minute_average---fifteen_minute_average
+load_average_stats#2 users---0---0---0---0
+logged_users_stats#header_username---terminal---logged_in_from---login_time---idle_time
+logged_users_stats#sundarar---0---NO_DATA_FOUND---NA---NA
+java_process_stats#header_username---process_id---parent_process_id---processor_utilization---start_time---process_address
+java_process_stats#NA---0---0---0---NA---NO_DATA_FOUND
+mysql_process_stats#header_username---process_id---parent_process_id---processor_utilization---start_time---process_address
+mysql_process_stats#NA---0---0---0---NA---NO_DATA_FOUND
+O3_process_stats#header_username---process_id---parent_process_id---processor_utilization---start_time---process_address
+O3_process_stats#NA---NA---NA---NA---NA---NO_DATA_FOUND
